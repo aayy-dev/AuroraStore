@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -160,7 +161,9 @@ fun UpdatesScreen(
                             SectionHeader(
                                 title = title,
                                 trailing = {
-                                    TextButton(
+                                    UpdateAllButton(
+                                        label = actionLabel,
+                                        isCancel = mainAnyActive,
                                         onClick = {
                                             if (mainAnyActive) {
                                                 onCancelAll()
@@ -168,7 +171,7 @@ fun UpdatesScreen(
                                                 onRequestUpdateAll(mainEntries.map { it.key })
                                             }
                                         }
-                                    ) { Text(actionLabel) }
+                                    )
                                 }
                             )
                         }
@@ -195,7 +198,9 @@ fun UpdatesScreen(
                                 title = stringResource(R.string.updates_approval_header),
                                 subtitle = stringResource(R.string.updates_approval_desc),
                                 trailing = {
-                                    TextButton(
+                                    UpdateAllButton(
+                                        label = actionLabel,
+                                        isCancel = approvalAnyActive,
                                         onClick = {
                                             if (approvalAnyActive) {
                                                 onCancelAll()
@@ -205,7 +210,7 @@ fun UpdatesScreen(
                                                 )
                                             }
                                         }
-                                    ) { Text(actionLabel) }
+                                    )
                                 }
                             )
                         }
@@ -288,5 +293,17 @@ private fun LazyListScope.updateItems(
             onUpdate = { onRequestUpdate(update) },
             onCancel = { onCancelUpdate(update.packageName) }
         )
+    }
+}
+
+/**
+ * Play Store style "Update all" button: filled while idle, outlined when it cancels active updates.
+ */
+@Composable
+private fun UpdateAllButton(label: String, isCancel: Boolean, onClick: () -> Unit) {
+    if (isCancel) {
+        OutlinedButton(onClick = onClick) { Text(label) }
+    } else {
+        Button(onClick = onClick) { Text(label) }
     }
 }

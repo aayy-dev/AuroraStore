@@ -5,16 +5,18 @@
 
 package com.aurora.store.compose.ui.apps
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.SecondaryScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,6 +37,8 @@ import com.aurora.gplayapi.model.StreamCluster
 import com.aurora.store.R
 import com.aurora.store.compose.composable.Placeholder
 import com.aurora.store.compose.composable.ShimmerAppRow
+import com.aurora.store.compose.composable.StoreChip
+import com.aurora.store.compose.composable.StoreChipStyle
 import com.aurora.store.compose.composable.app.LargeAppListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -98,15 +102,23 @@ private fun TopChartsBody(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        SecondaryScrollableTabRow(
-            selectedTabIndex = selectedIndex,
-            edgePadding = dimensionResource(R.dimen.spacing_small)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(
+                    horizontal = dimensionResource(R.dimen.spacing_medium),
+                    vertical = dimensionResource(R.dimen.spacing_small)
+                ),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
         ) {
             chartTitles.forEachIndexed { index, titleRes ->
-                Tab(
+                StoreChip(
+                    label = stringResource(titleRes),
                     selected = selectedIndex == index,
-                    onClick = { onTabSelected(index) },
-                    text = { Text(stringResource(titleRes)) }
+                    showCheckWhenSelected = true,
+                    style = StoreChipStyle.OUTLINED,
+                    onClick = { onTabSelected(index) }
                 )
             }
         }
@@ -140,6 +152,7 @@ private fun TopChartsBody(
                     items(count = apps.size, key = { apps[it].id }) { index ->
                         LargeAppListItem(
                             app = apps[index],
+                            rank = index + 1,
                             onClick = { onAppClick(apps[index]) }
                         )
                     }
