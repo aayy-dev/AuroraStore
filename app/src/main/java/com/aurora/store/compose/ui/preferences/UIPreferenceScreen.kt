@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.extensions.setAppTheme
 import com.aurora.store.R
+import com.aurora.store.compose.composable.PreferenceHeader
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.preferences.network.SingleChoiceDialog
@@ -102,7 +103,7 @@ private fun ScreenContent() {
                 .fillMaxSize()
         ) {
             item {
-                ListItem(headlineContent = { Text(stringResource(R.string.pref_ui_appearance)) })
+                PreferenceHeader(title = stringResource(R.string.pref_ui_appearance))
             }
             item {
                 ListItem(
@@ -113,7 +114,7 @@ private fun ScreenContent() {
             }
             item { HorizontalDivider() }
             item {
-                ListItem(headlineContent = { Text(stringResource(R.string.pref_ui_layout)) })
+                PreferenceHeader(title = stringResource(R.string.pref_ui_layout))
             }
             item {
                 ListItem(
@@ -124,7 +125,7 @@ private fun ScreenContent() {
             }
             item { HorizontalDivider() }
             item {
-                ListItem(headlineContent = { Text(stringResource(R.string.pref_common_extra)) })
+                PreferenceHeader(title = stringResource(R.string.pref_common_extra))
             }
             item {
                 ListItem(

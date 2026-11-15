@@ -7,21 +7,22 @@ package com.aurora.store.compose.ui.commons
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -79,69 +80,79 @@ fun MoreSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        containerColor = MaterialTheme.colorScheme.surfaceContainer
     ) {
-        AccountHeader(
-            viewModel = viewModel,
-            onNavigateToAccounts = {
-                onNavigateTo(Destination.Accounts)
-                onDismiss()
+        Column(
+            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.spacing_large)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        ) {
+            Surface(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surfaceContainerLowest
+            ) {
+                AccountHeader(
+                    viewModel = viewModel,
+                    onNavigateToAccounts = {
+                        onNavigateTo(Destination.Accounts)
+                        onDismiss()
+                    }
+                )
             }
+
+            MenuGroup(items = mainItems, onDismiss = onDismiss)
+            MenuGroup(items = extraItems, onDismiss = onDismiss)
+        }
+
+        Spacer(
+            Modifier
+                .padding(bottom = dimensionResource(R.dimen.spacing_large))
+                .navigationBarsPadding()
         )
+    }
+}
 
-        HorizontalDivider()
-
-        Column(
-            Modifier.padding(
-                horizontal = dimensionResource(R.dimen.spacing_small),
-                vertical = dimensionResource(R.dimen.spacing_small)
-            )
-        ) {
-            mainItems.forEach { item ->
-                NavigationDrawerItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(item.iconRes),
-                            contentDescription = null
-                        )
-                    },
-                    label = { Text(stringResource(item.titleRes)) },
-                    selected = false,
-                    onClick = {
-                        item.onClick()
-                        onDismiss()
-                    }
-                )
+/**
+ * Group of menu entries drawn as one rounded card with hairline gaps between rows, like the Play
+ * Store account menu.
+ */
+@Composable
+private fun MenuGroup(items: List<MoreItem>, onDismiss: () -> Unit) {
+    Column(
+        modifier = Modifier.clip(MaterialTheme.shapes.large),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        items.forEach { item ->
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                onClick = {
+                    item.onClick()
+                    onDismiss()
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .heightIn(min = 56.dp)
+                        .padding(horizontal = dimensionResource(R.dimen.spacing_large)),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        dimensionResource(R.dimen.spacing_large)
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(item.iconRes),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = stringResource(item.titleRes),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
         }
-
-        HorizontalDivider()
-
-        Column(
-            Modifier.padding(
-                horizontal = dimensionResource(R.dimen.spacing_small),
-                vertical = dimensionResource(R.dimen.spacing_small)
-            )
-        ) {
-            extraItems.forEach { item ->
-                NavigationDrawerItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(item.iconRes),
-                            contentDescription = null
-                        )
-                    },
-                    label = { Text(stringResource(item.titleRes)) },
-                    selected = false,
-                    onClick = {
-                        item.onClick()
-                        onDismiss()
-                    }
-                )
-            }
-        }
-
-        Spacer(Modifier.navigationBarsPadding())
     }
 }
 
@@ -165,7 +176,7 @@ private fun AccountHeader(viewModel: MoreViewModel, onNavigateToAccounts: () -> 
             placeholder = painterResource(R.drawable.ic_account),
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .requiredSize(40.dp)
+                .requiredSize(48.dp)
                 .clip(CircleShape)
         )
         Column(
@@ -180,14 +191,16 @@ private fun AccountHeader(viewModel: MoreViewModel, onNavigateToAccounts: () -> 
                     viewModel.authProvider.authData?.userProfile?.name
                         ?: stringResource(R.string.status_unavailable)
                 },
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = viewModel.authProvider.authData?.userProfile?.email
                     ?: stringResource(R.string.status_unavailable),
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
