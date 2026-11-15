@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -79,7 +78,7 @@ fun AppUpdateItem(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = update.displayName,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -121,7 +120,7 @@ fun AppUpdateItem(
             }
 
             else -> {
-                Button(onClick = onUpdate) {
+                OutlinedButton(onClick = onUpdate) {
                     Text(stringResource(R.string.action_update))
                 }
             }
