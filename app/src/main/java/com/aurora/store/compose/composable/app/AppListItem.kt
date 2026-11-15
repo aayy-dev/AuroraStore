@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -12,31 +13,25 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
+import androidx.compose.ui.unit.dp
 import com.aurora.gplayapi.model.App
 import com.aurora.store.R
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
 /**
- * Composable for displaying minimal app details in a horizontal-scrollable list
+ * Composable for displaying minimal app details in a horizontal-scrollable list, modeled on the
+ * Play Store's icon tiles: icon, up to two lines of title and a rating pill.
  * @param modifier The modifier to be applied to the composable
  * @param app [App] to display
  * @param onClick Callback when the composable is clicked
@@ -46,37 +41,31 @@ import com.aurora.store.compose.preview.ThemePreviewProvider
 fun AppListItem(modifier: Modifier = Modifier, app: App, onClick: () -> Unit = {}) {
     Column(
         modifier = modifier
-            .width(dimensionResource(R.dimen.icon_size_cluster))
+            .width(dimensionResource(R.dimen.icon_size_large))
+            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
-            .padding(all = dimensionResource(R.dimen.spacing_xsmall)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(
-            dimensionResource(R.dimen.spacing_xsmall),
-            Alignment.CenterVertically
-        )
+            .padding(vertical = dimensionResource(R.dimen.spacing_xsmall)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall))
     ) {
-        AsyncImage(
+        AppIcon(
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium))),
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(app.iconArtwork.url)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-
+                .aspectRatio(1f),
+            url = app.iconArtwork.url
         )
         Text(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = 2.dp),
             text = app.displayName,
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Start
+            overflow = TextOverflow.Ellipsis
         )
+        if (hasRating(app.labeledRating)) {
+            RatingPill(rating = app.labeledRating, style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 

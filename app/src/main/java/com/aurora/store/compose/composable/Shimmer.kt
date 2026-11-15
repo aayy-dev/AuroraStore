@@ -31,12 +31,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
 import com.aurora.store.R
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.theme.AppIconShape
 
 @Composable
 fun shimmerBrush(): Brush {
@@ -65,10 +67,14 @@ fun shimmerBrush(): Brush {
 }
 
 @Composable
-private fun ShimmerBlock(modifier: Modifier, radiusRes: Int = R.dimen.radius_small) {
+private fun ShimmerBlock(
+    modifier: Modifier,
+    radiusRes: Int = R.dimen.radius_small,
+    shape: Shape = RoundedCornerShape(dimensionResource(radiusRes))
+) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(dimensionResource(radiusRes)))
+            .clip(shape)
             .background(shimmerBrush())
     )
 }
@@ -102,7 +108,8 @@ private fun ShimmerListRow(showTrailing: Boolean) {
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
         ShimmerBlock(
-            modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium))
+            modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
+            shape = AppIconShape
         )
         ShimmerTextStack(
             modifier = Modifier.weight(1f),
@@ -157,17 +164,17 @@ internal fun ShimmerCarouselSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(all = dimensionResource(R.dimen.spacing_small)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+            .padding(all = dimensionResource(R.dimen.spacing_medium)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
     ) {
         ShimmerBlock(
             modifier = Modifier
-                .fillMaxWidth(0.42f)
-                .height(16.dp)
+                .fillMaxWidth(0.5f)
+                .height(20.dp)
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
         ) {
             repeat(5) {
                 Column(
@@ -176,17 +183,17 @@ internal fun ShimmerCarouselSection() {
                     )
                 ) {
                     ShimmerBlock(
-                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_cluster)),
-                        radiusRes = R.dimen.radius_medium
+                        modifier = Modifier.size(dimensionResource(R.dimen.icon_size_large)),
+                        shape = AppIconShape
                     )
                     ShimmerBlock(
                         modifier = Modifier
-                            .width(dimensionResource(R.dimen.icon_size_cluster) * 0.75f)
+                            .width(dimensionResource(R.dimen.icon_size_large) * 0.75f)
                             .height(11.dp)
                     )
                     ShimmerBlock(
                         modifier = Modifier
-                            .width(dimensionResource(R.dimen.icon_size_cluster) * 0.5f)
+                            .width(dimensionResource(R.dimen.icon_size_large) * 0.5f)
                             .height(11.dp)
                     )
                 }
@@ -199,9 +206,9 @@ internal fun ShimmerCarouselSection() {
 internal fun ShimmerAppListItem() {
     ShimmerBlock(
         modifier = Modifier
-            .padding(dimensionResource(R.dimen.spacing_xsmall))
-            .size(dimensionResource(R.dimen.icon_size_cluster)),
-        radiusRes = R.dimen.radius_medium
+            .padding(vertical = dimensionResource(R.dimen.spacing_xsmall))
+            .size(dimensionResource(R.dimen.icon_size_large)),
+        shape = AppIconShape
     )
 }
 

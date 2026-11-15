@@ -157,8 +157,8 @@ internal fun ClusterRow(
 
     LazyRow(
         state = rowState,
-        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_small)),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        contentPadding = PaddingValues(horizontal = dimensionResource(R.dimen.spacing_medium)),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
     ) {
         itemsIndexed(
             items = cluster.apps.distinctBy { it.packageName },

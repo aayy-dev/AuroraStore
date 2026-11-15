@@ -58,6 +58,7 @@ import com.aurora.store.AuroraApp
 import com.aurora.store.R
 import com.aurora.store.compose.composable.VersionChangeText
 import com.aurora.store.compose.navigation.Destination
+import com.aurora.store.compose.theme.AppIconShape
 import com.aurora.store.data.event.BusEvent
 import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.room.account.Account
@@ -211,7 +212,7 @@ private fun AppHeader(update: Update, onShowDetails: () -> Unit) {
             contentDescription = null,
             modifier = Modifier
                 .requiredSize(dimensionResource(R.dimen.icon_size_medium))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                .clip(AppIconShape)
         )
 
         Column(modifier = Modifier.weight(1f)) {
