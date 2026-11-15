@@ -46,6 +46,13 @@ val colorRed: Color
     @Composable @ReadOnlyComposable
     get() = if (isAppInDarkTheme()) Color(0xFFE57373) else Color(0xFFD32F2F)
 
+/**
+ * Track color of the rating distribution bars (sampled from the Play Store).
+ */
+val ratingBarTrackColor: Color
+    @Composable @ReadOnlyComposable
+    get() = if (isAppInDarkTheme()) Color(0xFF24335B) else Color(0xFFDAE2FF)
+
 /*
  * Store color schemes modeled on the current Google Play Store look (neutral surfaces with blue
  * accents). These are applied on every device; wallpaper-based dynamic color is intentionally not

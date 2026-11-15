@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
@@ -41,6 +40,7 @@ import com.aurora.gplayapi.model.Rating
 import com.aurora.gplayapi.model.Review
 import com.aurora.store.R
 import com.aurora.store.compose.composable.SectionHeader
+import com.aurora.store.compose.composable.app.StarRating
 import com.aurora.store.compose.composable.details.RatingListItem
 import com.aurora.store.compose.composable.details.ReviewListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
@@ -103,12 +103,15 @@ fun RatingAndReviews(
                 text = avgRating,
                 maxLines = 1,
                 style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.primary,
                 overflow = TextOverflow.Ellipsis
             )
+            StarRating(rating = rating.average)
             Text(
                 text = rating.abbreviatedLabel,
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 overflow = TextOverflow.Ellipsis
             )
         }
@@ -135,8 +138,8 @@ fun RatingAndReviews(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_small)))
-                    .background(color = MaterialTheme.colorScheme.surfaceContainer)
+                    .clip(MaterialTheme.shapes.large)
+                    .background(color = MaterialTheme.colorScheme.surfaceContainerHigh)
                     .requiredHeight(dimensionResource(R.dimen.review_height))
             ) {
                 ReviewListItem(review = featuredReviews[page])

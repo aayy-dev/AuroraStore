@@ -755,4 +755,6 @@
 
     <!-- Network Dialog -->
     <string name="action_check">"Check"</string>
+    <!-- Label under the rating in the app details stats row, e.g. "12K reviews" -->
+    <string name="details_stat_reviews">%1$s reviews</string>
 </resources>

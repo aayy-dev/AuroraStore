@@ -6,17 +6,18 @@
 package com.aurora.store.compose.composable.details
 
 import android.text.format.DateUtils
-import android.widget.RatingBar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -27,12 +28,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.aurora.gplayapi.model.Review
 import com.aurora.store.R
+import com.aurora.store.compose.composable.app.StarRating
 import com.aurora.store.compose.preview.ReviewPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
@@ -59,37 +61,41 @@ fun ReviewListItem(modifier: Modifier = Modifier, review: Review, showReply: Boo
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .requiredSize(dimensionResource(R.dimen.icon_size_small))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                .requiredSize(40.dp)
+                .clip(CircleShape)
         )
         Column(
-            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.spacing_small))
+            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xsmall))
         ) {
             Text(
                 text = review.userName,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
-                text = DateUtils.formatDateTime(
-                    LocalContext.current,
-                    review.timeStamp,
-                    DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_small)
                 ),
-                style = MaterialTheme.typography.bodySmall
-            )
-            AndroidView(
-                factory = { context ->
-                    RatingBar(context, null, android.R.attr.ratingBarStyleSmall)
-                },
-                update = { view ->
-                    view.rating = review.rating.toFloat()
-                }
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                StarRating(rating = review.rating.toFloat(), starSize = 12.dp)
+                Text(
+                    text = DateUtils.formatDateTime(
+                        LocalContext.current,
+                        review.timeStamp,
+                        DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Text(
                 text = review.comment,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 overflow = TextOverflow.Ellipsis
             )
             if (showReply && review.replyText.isNotBlank()) {
@@ -108,9 +114,9 @@ private fun DeveloperReply(modifier: Modifier = Modifier, text: String, timeStam
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_small)))
-            .background(MaterialTheme.colorScheme.surfaceContainer)
-            .padding(dimensionResource(R.dimen.spacing_small))
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            .padding(dimensionResource(R.dimen.spacing_medium))
     ) {
         Text(
             text = stringResource(R.string.review_developer_reply),
