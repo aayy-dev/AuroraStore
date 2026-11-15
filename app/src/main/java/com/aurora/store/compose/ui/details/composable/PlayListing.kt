@@ -111,7 +111,13 @@ private fun ListingChip(
     AssistChip(
         onClick = { onClick?.invoke() },
         enabled = true,
-        label = { Text(text = label, style = MaterialTheme.typography.bodySmall) },
+        label = {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
         leadingIcon = leadingIcon
     )
 }

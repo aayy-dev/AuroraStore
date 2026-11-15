@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
@@ -25,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.sp
 import com.aurora.extensions.isWindowCompact
 import com.aurora.store.R
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -61,30 +64,46 @@ fun Actions(
             else -> Modifier.widthIn(min = dimensionResource(R.dimen.width_button))
         }
 
-        FilledTonalButton(
+        val contentPadding = PaddingValues(
+            horizontal = dimensionResource(R.dimen.spacing_medium),
+            vertical = dimensionResource(R.dimen.spacing_small)
+        )
+
+        OutlinedButton(
             modifier = buttonWidthModifier,
             onClick = onSecondaryAction,
-            enabled = isSecondaryActionEnabled
+            enabled = isSecondaryActionEnabled,
+            contentPadding = contentPadding
         ) {
-            Text(
-                text = secondaryActionDisplayName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            ActionLabel(text = secondaryActionDisplayName)
         }
 
         Button(
             modifier = buttonWidthModifier,
             onClick = onPrimaryAction,
-            enabled = isPrimaryActionEnabled
+            enabled = isPrimaryActionEnabled,
+            contentPadding = contentPadding
         ) {
-            Text(
-                text = primaryActionDisplayName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            ActionLabel(text = primaryActionDisplayName)
         }
     }
+}
+
+/**
+ * Single-line button label that shrinks (down to 11sp) rather than truncating long labels such
+ * as "Manual download" when the two buttons share the width of a phone screen.
+ */
+@Composable
+private fun ActionLabel(text: String) {
+    Text(
+        text = text,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        autoSize = TextAutoSize.StepBased(
+            minFontSize = 11.sp,
+            maxFontSize = MaterialTheme.typography.labelLarge.fontSize
+        )
+    )
 }
 
 @PreviewWrapper(ThemePreviewProvider::class)

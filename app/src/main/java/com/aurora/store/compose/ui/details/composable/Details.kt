@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import com.aurora.gplayapi.model.App
 import com.aurora.store.R
 import com.aurora.store.compose.composable.VersionChangeText
@@ -57,7 +58,11 @@ fun Details(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(dimensionResource(R.dimen.spacing_medium))
+            .padding(
+                horizontal = dimensionResource(R.dimen.spacing_medium),
+                vertical = dimensionResource(R.dimen.spacing_small)
+            ),
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_xlarge))
     ) {
         AnimatedAppIcon(
             modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_large)),
@@ -65,10 +70,11 @@ fun Details(
             inProgress = state.inProgress(),
             progress = state.progress()
         )
-        Column(modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.spacing_small))) {
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = app.displayName,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -76,7 +82,7 @@ fun Details(
                 modifier = Modifier
                     .clickable(onClick = { onNavigateToDetailsDevProfile(app.developerName) }),
                 text = app.developerName,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.primary
@@ -92,7 +98,8 @@ fun Details(
                 }
 
                 Text(
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     text = when (cState) {
                         AppState.Downloading::class -> {
                             "${Formatter.formatShortFileSize(context, speed)}/s" +
