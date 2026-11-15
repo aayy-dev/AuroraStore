@@ -7,21 +7,24 @@ package com.aurora.store.compose.ui.main
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,19 +34,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.aurora.extensions.requiresObbDir
 import com.aurora.extensions.toast
 import com.aurora.store.MainViewModel
 import com.aurora.store.R
 import com.aurora.store.compose.composable.InsufficientStorageDialog
 import com.aurora.store.compose.composable.PermissionUpdateWarningDialog
-import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.TrackerUpdateWarningDialog
 import com.aurora.store.compose.composition.LocalNetworkStatus
 import com.aurora.store.compose.navigation.Destination
@@ -64,23 +72,46 @@ import com.aurora.store.util.Preferences.PREFERENCE_UPDATES_WARN_PERMISSIONS
 import com.aurora.store.util.Preferences.PREFERENCE_UPDATES_WARN_TRACKERS
 import com.aurora.store.util.StorageUtil
 import com.aurora.store.viewmodel.all.UpdatesViewModel
+import com.aurora.store.viewmodel.commons.MoreViewModel
 import com.aurora.store.viewmodel.notifications.NotificationsViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+/**
+ * Pages hosted by the main pager. The ordinal is the page index used by [MainScreen]'s
+ * `initialTab` (and the default-tab preference), so the order here must not change.
+ */
 private enum class MainTab(
     @StringRes val labelRes: Int,
-    @DrawableRes val iconRes: Int
+    @DrawableRes val iconRes: Int,
+    @DrawableRes val selectedIconRes: Int = iconRes
 ) {
-    APPS(R.string.title_apps, R.drawable.ic_apps),
+    APPS(R.string.title_apps, R.drawable.ic_nav_apps, R.drawable.ic_nav_apps_filled),
     GAMES(R.string.title_games, R.drawable.ic_games),
     UPDATES(R.string.title_updates, R.drawable.ic_updates)
 }
+
+/**
+ * Bottom navigation entries in display order (Play Store style: Games, Apps, Search, Updates).
+ * Search isn't a pager page; it opens the search screen.
+ */
+private sealed class NavEntry {
+    data class Page(val tab: MainTab) : NavEntry()
+    data object Search : NavEntry()
+}
+
+private val navEntries = listOf(
+    NavEntry.Page(MainTab.GAMES),
+    NavEntry.Page(MainTab.APPS),
+    NavEntry.Search,
+    NavEntry.Page(MainTab.UPDATES)
+)
 
 @Composable
 fun MainScreen(
     initialTab: Int = 0,
     mainViewModel: MainViewModel = hiltViewModel(),
+    moreViewModel: MoreViewModel = hiltViewModel(),
     updatesViewModel: UpdatesViewModel = hiltViewModel(),
     notificationsViewModel: NotificationsViewModel = hiltViewModel(),
     onNavigateTo: (Destination) -> Unit = {}
@@ -199,70 +230,56 @@ fun MainScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = stringResource(MainTab.entries[pagerState.currentPage].labelRes),
-                showNavigationIcon = false,
-                actions = {
-                    IconButton(onClick = { onNavigateTo(Destination.Notifications) }) {
-                        BadgedBox(
-                            badge = {
-                                if (notificationCount > 0) Badge { Text("$notificationCount") }
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_notifications),
-                                contentDescription = stringResource(R.string.title_notifications)
-                            )
-                        }
-                    }
-                    IconButton(onClick = { onNavigateTo(Destination.Downloads) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_download_manager),
-                            contentDescription = stringResource(R.string.title_download_manager)
-                        )
-                    }
-                    IconButton(onClick = { showMoreSheet = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_settings_account),
-                            contentDescription = stringResource(R.string.title_more)
-                        )
-                    }
-                }
+            HomeTopBar(
+                avatarUrl = moreViewModel.authProvider.authData?.userProfile?.artwork?.url,
+                notificationCount = notificationCount,
+                onNotificationsClick = { onNavigateTo(Destination.Notifications) },
+                onDownloadsClick = { onNavigateTo(Destination.Downloads) },
+                onAvatarClick = { showMoreSheet = true }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { onNavigateTo(Destination.Search) }) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_round_search),
-                    contentDescription = stringResource(R.string.action_search)
-                )
-            }
         },
         bottomBar = {
             NavigationBar {
-                MainTab.entries.forEachIndexed { index, tab ->
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(index) }
-                        },
-                        icon = {
-                            if (tab == MainTab.UPDATES && updateCount > 0) {
-                                BadgedBox(badge = { Badge { Text("$updateCount") } }) {
-                                    Icon(
-                                        painter = painterResource(tab.iconRes),
-                                        contentDescription = null
+                navEntries.forEach { entry ->
+                    when (entry) {
+                        is NavEntry.Page -> {
+                            val tab = entry.tab
+                            val selected = pagerState.currentPage == tab.ordinal
+                            NavigationBarItem(
+                                selected = selected,
+                                onClick = {
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(tab.ordinal)
+                                    }
+                                },
+                                icon = {
+                                    val icon = painterResource(
+                                        if (selected) tab.selectedIconRes else tab.iconRes
                                     )
-                                }
-                            } else {
+                                    if (tab == MainTab.UPDATES && updateCount > 0) {
+                                        BadgedBox(badge = { Badge { Text("$updateCount") } }) {
+                                            Icon(painter = icon, contentDescription = null)
+                                        }
+                                    } else {
+                                        Icon(painter = icon, contentDescription = null)
+                                    }
+                                },
+                                label = { Text(stringResource(tab.labelRes)) }
+                            )
+                        }
+
+                        NavEntry.Search -> NavigationBarItem(
+                            selected = false,
+                            onClick = { onNavigateTo(Destination.Search) },
+                            icon = {
                                 Icon(
-                                    painter = painterResource(tab.iconRes),
+                                    painter = painterResource(R.drawable.ic_round_search),
                                     contentDescription = null
                                 )
-                            }
-                        },
-                        label = { Text(stringResource(tab.labelRes)) }
-                    )
+                            },
+                            label = { Text(stringResource(R.string.action_search)) }
+                        )
+                    }
                 }
             }
         }
@@ -383,4 +400,63 @@ fun MainScreen(
             onDismiss = { storageWarning = null }
         )
     }
+}
+
+/**
+ * Play Store style home app bar: app logo on the start side, then notifications, downloads and
+ * the account avatar (which opens the account/more sheet).
+ */
+@Composable
+private fun HomeTopBar(
+    avatarUrl: String?,
+    notificationCount: Int,
+    onNotificationsClick: () -> Unit,
+    onDownloadsClick: () -> Unit,
+    onAvatarClick: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Image(
+                modifier = Modifier.size(32.dp),
+                painter = painterResource(R.drawable.ic_logo_mark),
+                contentDescription = stringResource(R.string.app_name)
+            )
+        },
+        actions = {
+            IconButton(onClick = onNotificationsClick) {
+                BadgedBox(
+                    badge = {
+                        if (notificationCount > 0) Badge { Text("$notificationCount") }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_notifications),
+                        contentDescription = stringResource(R.string.title_notifications)
+                    )
+                }
+            }
+            IconButton(onClick = onDownloadsClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_download_manager),
+                    contentDescription = stringResource(R.string.title_download_manager)
+                )
+            }
+            IconButton(onClick = onAvatarClick) {
+                AsyncImage(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape),
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(avatarUrl)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.ic_account),
+                    error = painterResource(R.drawable.ic_account),
+                    fallback = painterResource(R.drawable.ic_account),
+                    contentDescription = stringResource(R.string.title_more),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    )
 }
