@@ -1,18 +1,26 @@
 <!--
-  ~ SPDX-FileCopyrightText: 2021 Aurora OSS
+  ~ SPDX-FileCopyrightText: 2021-2026 Aurora OSS
   ~ SPDX-License-Identifier: GPL-3.0-or-later
   -->
 <resources>
 
-    <style name="AppTheme" parent="Theme.Material3.DynamicColors.Light.NoActionBar">
+    <!--
+      Window theme shown before Compose draws. Uses the fixed store palette (no wallpaper-based
+      dynamic color) so launch matches the Compose theme in compose/theme/.
+      -->
+    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="chipStyle">@style/Chip.Filter</item>
         <item name="bottomSheetStyle">@style/AppTheme.BottomSheetStyle</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- Brand accent for devices without dynamic color (Android 11 and below) -->
-        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorStoreSurface</item>
+        <item name="colorPrimary">@color/colorStorePrimary</item>
+        <item name="colorOnPrimary">@color/colorStoreOnPrimary</item>
+        <item name="colorSurface">@color/colorStoreSurface</item>
+        <item name="colorOnSurface">@color/colorStoreOnSurface</item>
+        <item name="android:colorBackground">@color/colorStoreSurface</item>
     </style>
 
-    <style name="AppTheme.Translucent" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+    <style name="AppTheme.Translucent" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
@@ -20,6 +28,8 @@
         <item name="android:windowAnimationStyle">@android:style/Animation</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="colorPrimary">@color/colorStorePrimary</item>
+        <item name="colorOnPrimary">@color/colorStoreOnPrimary</item>
     </style>
 
     <!-- Translucent variant with edge-to-edge transparent system bars (no status bar scrim) -->

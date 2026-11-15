@@ -1,5 +1,6 @@
 /*
  * SPDX-FileCopyrightText: 2025 The Calyx Institute
+ * SPDX-FileCopyrightText: 2026 Aurora OSS
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -45,61 +46,90 @@ val colorRed: Color
     @Composable @ReadOnlyComposable
     get() = if (isAppInDarkTheme()) Color(0xFFE57373) else Color(0xFFD32F2F)
 
-/**
- * Brand color schemes seeded from Aurora's accent (#6C63FF), used on devices that don't support
- * dynamic color (Android 11 and below) so the full palette stays on-brand instead of falling back
- * to Material's default purple baseline.
+/*
+ * Store color schemes modeled on the current Google Play Store look (neutral surfaces with blue
+ * accents). These are applied on every device; wallpaper-based dynamic color is intentionally not
+ * used so the app looks the same everywhere.
+ *
+ * Roles marked "sampled" were measured from screenshots of the Play Store (v54.1) on an Android 17
+ * emulator; the remaining roles follow the same blue/neutral tonal palette so that components which
+ * use them (menus, snackbars, error states, etc.) stay consistent.
  */
-val BrandLightColorScheme = lightColorScheme(
-    primary = Color(0xFF6C63FF),
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFE4DFFF),
-    onPrimaryContainer = Color(0xFF1A0066),
-    secondary = Color(0xFF5C5D72),
+
+val StoreLightColorScheme = lightColorScheme(
+    primary = Color(0xFF0B57D0), // sampled: Install button, links, stars
+    onPrimary = Color(0xFFFFFFFF), // sampled
+    primaryContainer = Color(0xFFD3E3FD),
+    onPrimaryContainer = Color(0xFF041E49),
+    inversePrimary = Color(0xFFA8C7FA),
+    secondary = Color(0xFF00639B), // sampled: selected navigation label
     onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = Color(0xFFE1E0F9),
-    onSecondaryContainer = Color(0xFF191A2C),
-    tertiary = Color(0xFF78536B),
+    secondaryContainer = Color(0xFFC2E7FF), // sampled: selected nav pill, selected filter chip
+    onSecondaryContainer = Color(0xFF004A77), // sampled
+    tertiary = Color(0xFF146C2E),
     onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFFFFD8EE),
-    onTertiaryContainer = Color(0xFF2E1126),
-    background = Color(0xFFFCF8FF),
-    onBackground = Color(0xFF1B1B21),
-    surface = Color(0xFFFCF8FF),
-    onSurface = Color(0xFF1B1B21),
-    surfaceVariant = Color(0xFFE4E1EC),
-    onSurfaceVariant = Color(0xFF47464F),
-    outline = Color(0xFF777680),
-    outlineVariant = Color(0xFFC8C5D0),
-    error = Color(0xFFBA1A1A),
+    tertiaryContainer = Color(0xFFC4EED0),
+    onTertiaryContainer = Color(0xFF072711),
+    background = Color(0xFFFFFFFF), // sampled
+    onBackground = Color(0xFF1F1F1F), // sampled
+    surface = Color(0xFFFFFFFF), // sampled
+    onSurface = Color(0xFF1F1F1F), // sampled: headings
+    surfaceVariant = Color(0xFFE1E3E1),
+    onSurfaceVariant = Color(0xFF444746), // sampled: list titles, secondary text, icons
+    surfaceTint = Color(0xFF0B57D0),
+    inverseSurface = Color(0xFF303030),
+    inverseOnSurface = Color(0xFFF2F2F2),
+    error = Color(0xFFB3261E),
     onError = Color(0xFFFFFFFF),
-    errorContainer = Color(0xFFFFDAD6),
-    onErrorContainer = Color(0xFF410002)
+    errorContainer = Color(0xFFF9DEDC),
+    onErrorContainer = Color(0xFF410E0B),
+    outline = Color(0xFF747775),
+    outlineVariant = Color(0xFFC4C7C5), // sampled: outlined buttons/chips, dividers
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFFFFFFFF),
+    surfaceDim = Color(0xFFD3DBE5),
+    surfaceContainerLowest = Color(0xFFFFFFFF),
+    surfaceContainerLow = Color(0xFFF8FAFD),
+    surfaceContainer = Color(0xFFF0F4F9), // sampled: navigation bar, chips, rating pills
+    surfaceContainerHigh = Color(0xFFE9EEF6), // sampled: search bar, review cards, arrow buttons
+    surfaceContainerHighest = Color(0xFFDDE3EA) // sampled: developer reply box
 )
 
-val BrandDarkColorScheme = darkColorScheme(
-    primary = Color(0xFFC8BFFF),
-    onPrimary = Color(0xFF31149C),
-    primaryContainer = Color(0xFF534BD6),
-    onPrimaryContainer = Color(0xFFE4DFFF),
-    secondary = Color(0xFFC5C4DD),
-    onSecondary = Color(0xFF2E2F42),
-    secondaryContainer = Color(0xFF444559),
-    onSecondaryContainer = Color(0xFFE1E0F9),
-    tertiary = Color(0xFFE8B9D5),
-    onTertiary = Color(0xFF46263B),
-    tertiaryContainer = Color(0xFF5E3C52),
-    onTertiaryContainer = Color(0xFFFFD8EE),
-    background = Color(0xFF131318),
-    onBackground = Color(0xFFE4E1E9),
-    surface = Color(0xFF131318),
-    onSurface = Color(0xFFE4E1E9),
-    surfaceVariant = Color(0xFF47464F),
-    onSurfaceVariant = Color(0xFFC8C5D0),
-    outline = Color(0xFF918F9A),
-    outlineVariant = Color(0xFF47464F),
-    error = Color(0xFFFFB4AB),
-    onError = Color(0xFF690005),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFFFDAD6)
+val StoreDarkColorScheme = darkColorScheme(
+    primary = Color(0xFFA8C7FA), // sampled
+    onPrimary = Color(0xFF062E6F), // sampled
+    primaryContainer = Color(0xFF0842A0),
+    onPrimaryContainer = Color(0xFFD3E3FD),
+    inversePrimary = Color(0xFF0B57D0),
+    secondary = Color(0xFF7FCFFF), // sampled
+    onSecondary = Color(0xFF003355),
+    secondaryContainer = Color(0xFF004A77), // sampled
+    onSecondaryContainer = Color(0xFFC2E7FF), // sampled
+    tertiary = Color(0xFF6DD58C),
+    onTertiary = Color(0xFF0A3818),
+    tertiaryContainer = Color(0xFF0F5223),
+    onTertiaryContainer = Color(0xFFC4EED0),
+    background = Color(0xFF131314), // sampled
+    onBackground = Color(0xFFE3E3E3), // sampled
+    surface = Color(0xFF131314), // sampled
+    onSurface = Color(0xFFE3E3E3), // sampled
+    surfaceVariant = Color(0xFF444746),
+    onSurfaceVariant = Color(0xFFC4C7C5), // sampled
+    surfaceTint = Color(0xFFA8C7FA),
+    inverseSurface = Color(0xFFE3E3E3),
+    inverseOnSurface = Color(0xFF303030),
+    error = Color(0xFFF2B8B5),
+    onError = Color(0xFF601410),
+    errorContainer = Color(0xFF8C1D18),
+    onErrorContainer = Color(0xFFF9DEDC),
+    outline = Color(0xFF8E918F),
+    outlineVariant = Color(0xFF444746), // sampled
+    scrim = Color(0xFF000000),
+    surfaceBright = Color(0xFF37393B),
+    surfaceDim = Color(0xFF131314),
+    surfaceContainerLowest = Color(0xFF0E0E0E),
+    surfaceContainerLow = Color(0xFF1B1B1B),
+    surfaceContainer = Color(0xFF1E1F20), // sampled
+    surfaceContainerHigh = Color(0xFF282A2C), // sampled
+    surfaceContainerHighest = Color(0xFF333537)
 )

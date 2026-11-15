@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2026 Aurora OSS
+  ~ SPDX-License-Identifier: GPL-3.0-or-later
+  -->
+<resources>
+    <!-- Store palette (mirrors StoreDarkColorScheme in compose/theme/Color.kt) -->
+    <color name="colorStorePrimary">#A8C7FA</color>
+    <color name="colorStoreOnPrimary">#062E6F</color>
+    <color name="colorStoreSurface">#131314</color>
+    <color name="colorStoreOnSurface">#E3E3E3</color>
+</resources>
