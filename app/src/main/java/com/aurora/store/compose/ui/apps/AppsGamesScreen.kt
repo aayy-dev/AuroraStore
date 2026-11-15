@@ -5,26 +5,31 @@
 
 package com.aurora.store.compose.ui.apps
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.aurora.gplayapi.api.TopChartType
 import com.aurora.gplayapi.model.ContentType
 import com.aurora.store.R
+import com.aurora.store.compose.composable.StoreChip
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.util.Preferences
 import com.aurora.store.viewmodel.category.CategoryViewModel
@@ -35,10 +40,10 @@ import kotlinx.coroutines.launch
 internal fun category(pageType: Int): ContentType =
     if (pageType == 1) ContentType.GAME else ContentType.APPLICATION
 
-private enum class AppsTab(@StringRes val titleRes: Int) {
-    FOR_YOU(R.string.tab_for_you),
-    TOP_CHARTS(R.string.tab_top_charts),
-    CATEGORIES(R.string.tab_categories)
+private enum class AppsTab(@StringRes val titleRes: Int, @DrawableRes val iconRes: Int) {
+    FOR_YOU(R.string.tab_for_you, R.drawable.ic_chip_for_you),
+    TOP_CHARTS(R.string.tab_top_charts, R.drawable.ic_chip_top_charts),
+    CATEGORIES(R.string.tab_categories, R.drawable.ic_chip_categories)
 }
 
 @Composable
@@ -65,19 +70,26 @@ fun AppsGamesScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        PrimaryTabRow(
-            modifier = Modifier.fillMaxWidth(),
-            selectedTabIndex = pagerState.currentPage
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(
+                    horizontal = dimensionResource(R.dimen.spacing_medium),
+                    vertical = dimensionResource(R.dimen.spacing_small)
+                ),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
         ) {
             tabs.forEachIndexed { index, tab ->
-                Tab(
+                StoreChip(
+                    label = stringResource(tab.titleRes),
+                    iconRes = tab.iconRes,
                     selected = pagerState.currentPage == index,
                     onClick = {
                         coroutineScope.launch {
                             pagerState.animateScrollToPage(index)
                         }
-                    },
-                    text = { Text(stringResource(tab.titleRes)) }
+                    }
                 )
             }
         }
