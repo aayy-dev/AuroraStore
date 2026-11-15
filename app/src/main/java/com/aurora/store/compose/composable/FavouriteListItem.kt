@@ -9,7 +9,6 @@ import android.text.format.DateUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +38,7 @@ import com.aurora.store.R
 import com.aurora.store.compose.composable.app.AnimatedAppIcon
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.theme.AppIconShape
 import com.aurora.store.compose.theme.colorGreen
 import com.aurora.store.compose.theme.colorRed
 import com.aurora.store.data.event.InstallerEvent
@@ -120,7 +120,7 @@ fun FavouriteListItem(
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .requiredSize(dimensionResource(R.dimen.icon_size_medium))
-                            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                            .clip(AppIconShape)
                     )
                 }
             },

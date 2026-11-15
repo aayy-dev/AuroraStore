@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,6 +34,7 @@ import com.aurora.gplayapi.model.App
 import com.aurora.store.R
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.theme.AppIconShape
 
 /**
  * Composable to show icon for an app that can be animated to also show install progress
@@ -60,7 +60,7 @@ fun AnimatedAppIcon(
     )
     val clip = when {
         inProgress -> CircleShape
-        else -> RoundedCornerShape(dimensionResource(R.dimen.radius_medium))
+        else -> AppIconShape
     }
 
     Box(modifier = modifier, contentAlignment = Alignment.Center) {

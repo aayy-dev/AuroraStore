@@ -21,3 +21,8 @@ val StoreShapes = Shapes(
     large = RoundedCornerShape(24.dp),
     extraLarge = RoundedCornerShape(28.dp)
 )
+
+/**
+ * Shape for app icons, proportional to the icon size like the Play Store's rounded-square icons.
+ */
+val AppIconShape = RoundedCornerShape(percent = 22)

@@ -7,7 +7,6 @@ package com.aurora.store.compose.composable.app
 
 import android.text.format.DateUtils
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -27,6 +26,7 @@ import com.aurora.store.R
 import com.aurora.store.compose.composable.AuroraListItem
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.theme.AppIconShape
 import com.aurora.store.util.CommonUtil
 
 /**
@@ -62,7 +62,7 @@ fun InstalledAppListItem(
             AsyncImage(
                 modifier = Modifier
                     .requiredSize(dimensionResource(R.dimen.icon_size_medium))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium))),
+                    .clip(AppIconShape),
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(app.iconArtwork.url)
                     .crossfade(true)
