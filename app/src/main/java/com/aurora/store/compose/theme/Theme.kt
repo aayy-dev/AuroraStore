@@ -7,18 +7,14 @@
 package com.aurora.store.compose.theme
 
 import android.content.SharedPreferences
-import android.os.Build
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialExpressiveTheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -27,7 +23,10 @@ import androidx.core.view.WindowCompat
 import com.aurora.store.util.Preferences
 
 /**
- * App theme for Aurora Store based on [MaterialExpressiveTheme]
+ * App theme for Aurora Store based on [MaterialExpressiveTheme], styled after the Play Store.
+ *
+ * The store palette ([StoreLightColorScheme] / [StoreDarkColorScheme]) is always used; wallpaper
+ * based dynamic color is not applied so the app looks the same on every device.
  */
 @Composable
 fun AuroraTheme(content: @Composable () -> Unit) {
@@ -36,48 +35,15 @@ fun AuroraTheme(content: @Composable () -> Unit) {
     var themeStyle by remember {
         mutableIntStateOf(Preferences.getInteger(context, Preferences.PREFERENCE_THEME_STYLE))
     }
-    var dynamicColor by remember {
-        mutableStateOf(
-            Preferences.getBoolean(
-                context,
-                Preferences.PREFERENCE_DYNAMIC_COLORS,
-                Preferences.dynamicColorsDefault
-            )
-        )
-    }
     DisposableEffect(Unit) {
         val prefs = Preferences.getPrefs(context)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            when (key) {
-                Preferences.PREFERENCE_THEME_STYLE ->
-                    themeStyle = Preferences.getInteger(context, key)
-
-                Preferences.PREFERENCE_DYNAMIC_COLORS ->
-                    dynamicColor =
-                        Preferences.getBoolean(context, key, Preferences.dynamicColorsDefault)
+            if (key == Preferences.PREFERENCE_THEME_STYLE) {
+                themeStyle = Preferences.getInteger(context, key)
             }
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
-    }
-    val useDynamicColor = dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-
-    val lightScheme = if (useDynamicColor) {
-        dynamicLightColorScheme(context)
-    } else {
-        BrandLightColorScheme
-    }
-
-    val darkScheme = if (useDynamicColor) {
-        dynamicDarkColorScheme(context)
-    } else {
-        BrandDarkColorScheme
-    }
-
-    val colorScheme = when (themeStyle) {
-        1 -> lightScheme
-        2 -> darkScheme
-        else -> if (isSystemInDarkTheme()) darkScheme else lightScheme
     }
 
     val darkTheme = when (themeStyle) {
@@ -110,5 +76,10 @@ fun AuroraTheme(content: @Composable () -> Unit) {
         }
     }
 
-    MaterialExpressiveTheme(colorScheme = colorScheme, content = content)
+    MaterialExpressiveTheme(
+        colorScheme = if (darkTheme) StoreDarkColorScheme else StoreLightColorScheme,
+        shapes = StoreShapes,
+        typography = StoreTypography,
+        content = content
+    )
 }

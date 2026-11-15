@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ SPDX-FileCopyrightText: 2021 Aurora OSS
+  ~ SPDX-FileCopyrightText: 2021-2026 Aurora OSS
   ~ SPDX-License-Identifier: GPL-3.0-or-later
   -->
 <resources>
     <!--Common Colors-->
     <color name="colorAccent">#6C63FF</color>
     <color name="ic_launcher_background">#6C63FF</color>
+
+    <!-- Store palette (mirrors StoreLightColorScheme in compose/theme/Color.kt) -->
+    <color name="colorStorePrimary">#0B57D0</color>
+    <color name="colorStoreOnPrimary">#FFFFFF</color>
+    <color name="colorStoreSurface">#FFFFFF</color>
+    <color name="colorStoreOnSurface">#1F1F1F</color>
 </resources>

@@ -5,10 +5,14 @@
   -->
 <resources>
 
-    <style name="AppTheme" parent="Theme.Material3.DynamicColors.Dark.NoActionBar">
+    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="chipStyle">@style/Chip.Filter</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- Brand accent for devices without dynamic color (Android 11 and below) -->
-        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorStoreSurface</item>
+        <item name="colorPrimary">@color/colorStorePrimary</item>
+        <item name="colorOnPrimary">@color/colorStoreOnPrimary</item>
+        <item name="colorSurface">@color/colorStoreSurface</item>
+        <item name="colorOnSurface">@color/colorStoreOnSurface</item>
+        <item name="android:colorBackground">@color/colorStoreSurface</item>
     </style>
 </resources>

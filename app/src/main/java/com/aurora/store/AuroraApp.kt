@@ -29,7 +29,6 @@ import com.aurora.store.util.CommonUtil
 import com.aurora.store.util.NotificationUtil
 import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.Preferences
-import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.MainScope
@@ -74,14 +73,6 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
         // Set the app theme
         val themeStyle = Preferences.getInteger(this, Preferences.PREFERENCE_THEME_STYLE)
         setAppTheme(themeStyle)
-
-        // Apply dynamic colors to activities, unless disabled (opt-out, off by default on One UI)
-        val dynamicColors = Preferences.getBoolean(
-            this,
-            Preferences.PREFERENCE_DYNAMIC_COLORS,
-            Preferences.dynamicColorsDefault
-        )
-        if (dynamicColors) DynamicColors.applyToActivitiesIfAvailable(this)
 
         // Create Notification Channels
         NotificationUtil.createNotificationChannel(this)
