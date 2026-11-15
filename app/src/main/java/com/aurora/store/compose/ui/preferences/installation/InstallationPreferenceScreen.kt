@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.core.content.getSystemService
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.aurora.store.R
+import com.aurora.store.compose.composable.PreferenceHeader
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -117,9 +118,7 @@ private fun ScreenContent(
             }
             item { HorizontalDivider() }
             item {
-                ListItem(
-                    headlineContent = { Text(stringResource(R.string.pref_common_extra)) }
-                )
+                PreferenceHeader(title = stringResource(R.string.pref_common_extra))
             }
             item {
                 ListItem(

@@ -51,7 +51,7 @@ fun InstalledAppListItem(
         headline = app.displayName,
         supporting = app.packageName,
         tertiary = buildInstalledExtras(sizeBytes, lastUpdateTime, installerLabel),
-        headlineStyle = MaterialTheme.typography.bodyMedium,
+        headlineStyle = MaterialTheme.typography.bodyLarge,
         onClick = onClick,
         leading = {
             AsyncImage(

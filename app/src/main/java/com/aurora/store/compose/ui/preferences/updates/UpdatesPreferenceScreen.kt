@@ -50,6 +50,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.aurora.extensions.isIgnoringBatteryOptimizations
 import com.aurora.extensions.isTAndAbove
 import com.aurora.store.R
+import com.aurora.store.compose.composable.PreferenceHeader
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -286,9 +287,7 @@ private fun ScreenContent(
             }
             item { HorizontalDivider() }
             item {
-                ListItem(headlineContent = {
-                    Text(stringResource(R.string.pref_updates_app_source))
-                })
+                PreferenceHeader(title = stringResource(R.string.pref_updates_app_source))
             }
             item {
                 ListItem(
@@ -305,7 +304,7 @@ private fun ScreenContent(
             }
             item { HorizontalDivider() }
             item {
-                ListItem(headlineContent = { Text(stringResource(R.string.pref_common_advanced)) })
+                PreferenceHeader(title = stringResource(R.string.pref_common_advanced))
             }
             item {
                 ListItem(

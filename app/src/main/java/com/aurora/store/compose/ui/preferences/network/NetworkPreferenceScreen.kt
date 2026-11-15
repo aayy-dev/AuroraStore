@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.aurora.store.R
+import com.aurora.store.compose.composable.PreferenceHeader
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.ThemePreviewProvider
@@ -177,7 +178,7 @@ private fun ScreenContent(
             }
             item { HorizontalDivider() }
             item {
-                ListItem(headlineContent = { Text(stringResource(R.string.pref_common_extra)) })
+                PreferenceHeader(title = stringResource(R.string.pref_common_extra))
             }
             if (hasMicroG) {
                 item {
