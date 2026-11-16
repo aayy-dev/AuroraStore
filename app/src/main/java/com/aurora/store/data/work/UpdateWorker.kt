@@ -236,7 +236,8 @@ class UpdateWorker @AssistedInject constructor(
                 Preferences.PREFERENCE_FILTER_INSTALLERS
             )
             val filteredPackages = if (isAuroraOnlyFilterEnabled) {
-                packages.filter { CertUtil.isAuroraStoreApp(context, it.packageName) }
+                val installers = CertUtil.auroraInstallers(context)
+                packages.filter { CertUtil.isAuroraStoreApp(context, it.packageName, installers) }
             } else {
                 packages.filterNot { pkg ->
                     if (isFDroidFilterEnabled && CertUtil.isFDroidApp(context, pkg.packageName)) {

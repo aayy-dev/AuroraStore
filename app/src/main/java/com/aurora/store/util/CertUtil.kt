@@ -45,15 +45,41 @@ object CertUtil {
         context.packageManager.getUpdateOwnerPackageNameCompat(packageName) ==
             PACKAGE_NAME_APP_GALLERY
 
-    fun isAuroraStoreApp(context: Context, packageName: String): Boolean {
+/**
+     * What [isAuroraStoreApp] checks installs against. Look it up once when checking many apps:
+     * it probes every installer.
+     */
+    class AuroraInstallers(val packageNames: Set<String>, val hasMicroGCompanion: Boolean)
+
+    fun auroraInstallers(context: Context) = AuroraInstallers(
+        packageNames = AppInstaller.getAvailableInstallersInfo(context, rootAccess = false)
+            .flatMap { it.installerPackageNames }
+            .toSet(),
+        hasMicroGCompanion = PackageUtil.hasMicroGCompanion(context)
+    )
+
+    fun isAuroraStoreApp(
+        context: Context,
+        packageName: String,
+        installers: AuroraInstallers = auroraInstallers(context)
+    ): Boolean = try {
         val owner = context.packageManager.getUpdateOwnerPackageNameCompat(packageName)
-            ?: return false
-        // Root and Shizuku installs claim Play as installer, so Play alone proves nothing
-        if (owner == PACKAGE_NAME_PLAY_STORE) {
-            return AppInstaller.isPlayAttributedInstall(context, packageName)
+        when (owner) {
+            null -> false
+
+            // Root and Shizuku installs claim Play as installer, so Play alone proves nothing.
+            // Where "Play" is microG's companion, though, it only installs what it's asked to,
+            // which is how Aurora's microG installer works, so those count
+            PACKAGE_NAME_PLAY_STORE ->
+                installers.hasMicroGCompanion ||
+                    AppInstaller.isPlayAttributedInstall(context, packageName)
+
+            else -> owner in installers.packageNames
         }
-        return AppInstaller.getAvailableInstallersInfo(context, rootAccess = false)
-            .any { owner in it.installerPackageNames }
+    } catch (exception: Exception) {
+        // E.g. uninstalled meanwhile; one app must not stop the whole list from being checked
+        Log.w(TAG, "Failed to check the installer of $packageName", exception)
+        false
     }
 
     fun getEncodedCertificateHashes(context: Context, packageName: String): List<String> = try {
