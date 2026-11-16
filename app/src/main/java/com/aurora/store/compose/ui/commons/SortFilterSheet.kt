@@ -22,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -38,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.store.R
 import com.aurora.store.compose.composable.SectionHeader
+import com.aurora.store.compose.composable.StoreSheet
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
 /**
@@ -57,7 +57,7 @@ fun SortFilterSheet(
     onStateChange: (SortFilterState) -> Unit,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
@@ -91,7 +91,7 @@ fun <T> SortSheet(
     onSortOrderChange: (SortOrder) -> Unit,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {

@@ -21,6 +21,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
 /**
@@ -43,16 +45,19 @@ fun AuroraListItem(
     trailing: (@Composable () -> Unit)? = null,
     headlineStyle: TextStyle = MaterialTheme.typography.bodyLarge
 ) {
+    // On TV a row's own click target and the controls in its trailing slot must be separate
+    // focus targets, or the remote can't reach the controls
+    val splitTarget = LocalUI.current == UI.TV && onClick != null && trailing != null
+    val clickModifier = if (onClick != null) {
+        Modifier.clickable(enabled = enabled, onClick = onClick)
+    } else {
+        Modifier
+    }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(
-                if (onClick != null) {
-                    Modifier.clickable(enabled = enabled, onClick = onClick)
-                } else {
-                    Modifier
-                }
-            )
+            .then(if (splitTarget) Modifier else clickModifier)
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
                 vertical = dimensionResource(R.dimen.spacing_xsmall)
@@ -60,22 +65,32 @@ fun AuroraListItem(
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (leading != null) leading()
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = headline, style = headlineStyle)
-            if (!supporting.isNullOrBlank()) {
-                Text(
-                    text = supporting,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            if (!tertiary.isNullOrBlank()) {
-                Text(
-                    text = tertiary,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .then(if (splitTarget) clickModifier else Modifier),
+            horizontalArrangement = Arrangement.spacedBy(
+                dimensionResource(R.dimen.spacing_small)
+            ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (leading != null) leading()
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = headline, style = headlineStyle)
+                if (!supporting.isNullOrBlank()) {
+                    Text(
+                        text = supporting,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (!tertiary.isNullOrBlank()) {
+                    Text(
+                        text = tertiary,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
         if (trailing != null) trailing()
