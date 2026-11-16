@@ -157,6 +157,25 @@ class AppInstaller @Inject constructor(
         }
 
         /**
+         * Whether installing needs Aurora's own "install unknown apps" permission. Only the
+         * session and native installers use it; Root, Aurora Services, App Manager, Shizuku and
+         * microG install as another app. When the chosen installer is unavailable, installs fall
+         * back to the session installer, which does need it.
+         *
+         * Never blocks: root only counts once root has been granted to an open shell, so before
+         * that the permission is still asked for.
+         */
+        fun needsInstallPermission(context: Context): Boolean =
+            when (getCurrentInstaller(context)) {
+                Installer.SESSION, Installer.NATIVE -> true
+                Installer.ROOT -> Shell.isAppGrantedRoot() != true
+                Installer.SERVICE -> !hasAuroraService(context)
+                Installer.AM -> !hasAppManager(context)
+                Installer.SHIZUKU -> !(hasShizukuOrSui(context) && hasShizukuPerm(context))
+                Installer.MICROG -> !hasMicroGCompanion(context)
+            }
+
+        /**
          * @param recheck Re-probe `su` if the cached shell isn't root, e.g. after root was
          * granted in the root manager; libsu otherwise keeps the first shell for the process.
          */
