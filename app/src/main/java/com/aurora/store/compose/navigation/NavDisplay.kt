@@ -326,7 +326,7 @@ fun NavDisplay(startDestination: NavKey) {
                             slideOutVertically(navSlideSpec) { it }
                     }
                 }
-            ) { SearchScreen() }
+            ) { SearchScreen(onNavigateTo = ::navigate) }
 
             entry<Screen.Splash> { screen ->
                 SplashScreen(

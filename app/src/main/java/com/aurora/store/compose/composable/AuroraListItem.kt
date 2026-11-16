@@ -5,7 +5,9 @@
 
 package com.aurora.store.compose.composable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.Dp
 import com.aurora.store.R
 import com.aurora.store.compose.composition.LocalUI
 import com.aurora.store.compose.composition.UI
@@ -40,6 +43,9 @@ fun AuroraListItem(
     supporting: String? = null,
     tertiary: String? = null,
     onClick: (() -> Unit)? = null,
+    onLongClick: (() -> Unit)? = null,
+    selected: Boolean = false,
+    verticalPadding: Dp = dimensionResource(R.dimen.spacing_xsmall),
     enabled: Boolean = true,
     leading: (@Composable () -> Unit)? = null,
     trailing: (@Composable () -> Unit)? = null,
@@ -47,20 +53,33 @@ fun AuroraListItem(
 ) {
     // On TV a row's own click target and the controls in its trailing slot must be separate
     // focus targets, or the remote can't reach the controls
-    val splitTarget = LocalUI.current == UI.TV && onClick != null && trailing != null
-    val clickModifier = if (onClick != null) {
-        Modifier.clickable(enabled = enabled, onClick = onClick)
-    } else {
-        Modifier
+    val clickable = onClick != null || onLongClick != null
+    val splitTarget = LocalUI.current == UI.TV && clickable && trailing != null
+    val clickModifier = when {
+        onLongClick != null -> Modifier.combinedClickable(
+            enabled = enabled,
+            onClick = { onClick?.invoke() },
+            onLongClick = onLongClick
+        )
+
+        onClick != null -> Modifier.clickable(enabled = enabled, onClick = onClick)
+        else -> Modifier
     }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .then(if (splitTarget) Modifier else clickModifier)
+            .then(
+                if (selected) {
+                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                } else {
+                    Modifier
+                }
+            )
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
-                vertical = dimensionResource(R.dimen.spacing_xsmall)
+                vertical = verticalPadding
             ),
         horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
         verticalAlignment = Alignment.CenterVertically

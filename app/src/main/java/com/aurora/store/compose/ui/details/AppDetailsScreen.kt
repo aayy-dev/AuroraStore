@@ -7,7 +7,6 @@
 package com.aurora.store.compose.ui.details
 
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.text.format.Formatter
 import androidx.compose.animation.AnimatedContent
@@ -61,12 +60,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
-import com.aurora.Constants
 import com.aurora.extensions.appInfo
+import com.aurora.extensions.openPlayStore
 import com.aurora.extensions.requiresGMS
 import com.aurora.extensions.requiresObbDir
 import com.aurora.extensions.share
@@ -198,7 +196,7 @@ fun AppDetailsScreen(
                 error = err.error,
                 extra = err.extra,
                 isAnonymous = viewModel.authProvider.isAnonymous,
-                onBuy = { openPlayStore(context, loadedApp.packageName) },
+                onBuy = { context.openPlayStore(loadedApp.packageName) },
                 onDismiss = viewModel::dismissInstallError
             )
         }
@@ -284,21 +282,6 @@ fun AppDetailsScreen(
                 )
             }
         }
-    }
-}
-
-/**
- * Opens the given app's Play Store listing, preferring the Play Store app when available and
- * falling back to whichever activity can handle the web listing (e.g. a browser).
- */
-private fun openPlayStore(context: Context, packageName: String) {
-    val uri = "${Constants.SHARE_URL}$packageName".toUri()
-    val intent = Intent(Intent.ACTION_VIEW).apply { data = uri }
-
-    if (intent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(intent.apply { setPackage(Constants.PACKAGE_NAME_PLAY_STORE) })
-    } else {
-        context.startActivity(intent)
     }
 }
 
@@ -412,9 +395,17 @@ private fun ScreenContentApp(
     LaunchedEffect(showsScreenshot) { if (!showsScreenshot) isScreenshotOpen = false }
     val coroutineScope = rememberCoroutineScope()
 
+    var isTopChartLoading by remember { mutableStateOf(false) }
+
     fun onTopChartClick(chart: TopChart, title: String) {
+        if (isTopChartLoading) return
+        isTopChartLoading = true
         coroutineScope.launch {
-            val cluster = onFetchTopChart(chart, title)
+            val cluster = try {
+                onFetchTopChart(chart, title)
+            } finally {
+                isTopChartLoading = false
+            }
             if (cluster != null) {
                 onNavigateTo(Destination.StreamBrowse(cluster))
             } else {
@@ -612,7 +603,7 @@ private fun ScreenContentApp(
                     ShortcutManagerUtil.requestPinShortcut(context, app.packageName)
                 }
 
-                MenuItem.PLAY_STORE -> openPlayStore(context, app.packageName)
+                MenuItem.PLAY_STORE -> context.openPlayStore(app.packageName)
             }
         }
     }
@@ -752,6 +743,7 @@ private fun ScreenContentApp(
                         PlayListing(
                             app = app,
                             categoryIconUrl = categoryIconUrl,
+                            isTopChartLoading = isTopChartLoading,
                             onCategoryClick = { onNavigateTo(Destination.CategoryBrowse(it)) },
                             onTopChartClick = ::onTopChartClick,
                             onBrowse = { title, browseUrl ->

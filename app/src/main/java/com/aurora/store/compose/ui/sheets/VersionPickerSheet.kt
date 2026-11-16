@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aurora.store.R
 import com.aurora.store.compose.composable.StoreSheet
-import com.aurora.store.data.model.Report
+import com.aurora.store.data.model.VersionEntry
 import com.aurora.store.data.model.formatExodusDate
 
 /**
@@ -47,9 +47,9 @@ import com.aurora.store.data.model.formatExodusDate
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VersionPickerSheet(
-    reports: List<Report>,
+    versions: List<VersionEntry>,
     loading: Boolean,
-    onSelect: (Report) -> Unit,
+    onSelect: (VersionEntry) -> Unit,
     onDismiss: () -> Unit
 ) {
     StoreSheet(onDismissRequest = onDismiss) {
@@ -83,7 +83,7 @@ fun VersionPickerSheet(
                     ContainedLoadingIndicator()
                 }
 
-                reports.isEmpty() -> Text(
+                versions.isEmpty() -> Text(
                     text = stringResource(R.string.manual_download_no_versions),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -101,12 +101,10 @@ fun VersionPickerSheet(
                         .clip(MaterialTheme.shapes.large)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
-                    itemsIndexed(
-                        items = reports,
-                        key = { _, report -> "report-${report.id}" }
-                    ) { index, report ->
+                    // Positional keys: Exodus can hold more than one report per version code
+                    itemsIndexed(items = versions) { index, entry ->
                         if (index > 0) HorizontalDivider()
-                        VersionRow(report = report, onClick = { onSelect(report) })
+                        VersionRow(entry = entry, onClick = { onSelect(entry) })
                     }
                 }
             }
@@ -143,13 +141,12 @@ private fun AvailabilityWarning(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun VersionRow(report: Report, onClick: () -> Unit) {
-    val title = if (report.version.isBlank()) {
-        report.versionCode
+private fun VersionRow(entry: VersionEntry, onClick: () -> Unit) {
+    val title = if (entry.version.isBlank()) {
+        entry.versionCode.toString()
     } else {
-        "${report.version} (${report.versionCode})"
+        "${entry.version} (${entry.versionCode})"
     }
-    val date = report.updatedAt.ifBlank { report.creationDate }
 
     Column(
         modifier = Modifier
@@ -167,9 +164,9 @@ private fun VersionRow(report: Report, onClick: () -> Unit) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        if (date.isNotBlank()) {
+        if (entry.date.isNotBlank()) {
             Text(
-                text = formatExodusDate(date),
+                text = formatExodusDate(entry.date),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

@@ -5,7 +5,6 @@
 
 package com.aurora.store.compose.ui.updates
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -101,10 +99,7 @@ fun UpdatesScreen(
         when {
             updateMap == null -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.spacing_medium)
-                    )
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     items(10) { ShimmerUpdateItem() }
                 }
@@ -127,10 +122,7 @@ fun UpdatesScreen(
 
             else -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.spacing_medium)
-                    )
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     if (selfEntries.isNotEmpty()) {
                         item(key = "header_self") {
