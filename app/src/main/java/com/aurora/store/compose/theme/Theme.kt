@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.Preferences
 
 /**
@@ -46,9 +47,12 @@ fun AuroraTheme(content: @Composable () -> Unit) {
         onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
 
-    val darkTheme = when (themeStyle) {
-        1 -> false
-        2 -> true
+    // TV follows the dark-only TV Play Store, whatever the theme preference says
+    val isTv = remember { PackageUtil.isTv(context) }
+    val darkTheme = when {
+        isTv -> true
+        themeStyle == 1 -> false
+        themeStyle == 2 -> true
         else -> isSystemInDarkTheme()
     }
 
@@ -77,9 +81,14 @@ fun AuroraTheme(content: @Composable () -> Unit) {
     }
 
     MaterialExpressiveTheme(
-        colorScheme = if (darkTheme) StoreDarkColorScheme else StoreLightColorScheme,
+        colorScheme = when {
+            isTv -> StoreTvColorScheme
+            darkTheme -> StoreDarkColorScheme
+            else -> StoreLightColorScheme
+        },
         shapes = StoreShapes,
-        typography = rememberStoreTypography(),
-        content = content
-    )
+        typography = rememberStoreTypography()
+    ) {
+        if (isTv) AuroraTvTheme(content = content) else content()
+    }
 }
