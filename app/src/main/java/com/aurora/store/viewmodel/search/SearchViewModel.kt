@@ -8,6 +8,7 @@
 package com.aurora.store.viewmodel.search
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -45,13 +46,17 @@ import kotlinx.coroutines.launch
 class SearchViewModel @Inject constructor(
     val authProvider: AuthProvider,
     private val webPlayClient: WebPlayClient,
-    private val playClient: PlayClient
+    private val playClient: PlayClient,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _suggestions = MutableStateFlow<List<SearchSuggestion>>(emptyList())
     val suggestions = _suggestions.asStateFlow()
 
-    private val searchFilter = MutableStateFlow(SearchFilter())
+    // The query and filter are kept in saved state: if Android recreates the screen (or the app
+    // after a process death), the search screen comes back showing results, so run it again
+    private val searchFilter =
+        MutableStateFlow(savedStateHandle.get<SearchFilter>(KEY_FILTER) ?: SearchFilter())
     private val _apps = MutableStateFlow<PagingData<App>>(PagingData.empty())
     val apps = combine(searchFilter, _apps) { filter, pagingData ->
         pagingData.filter { app ->
@@ -66,11 +71,17 @@ class SearchViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), PagingData.empty())
 
+    init {
+        savedStateHandle.get<String>(KEY_QUERY)?.let(::search)
+    }
+
     fun filterResults(filter: SearchFilter) {
         searchFilter.value = filter
+        savedStateHandle[KEY_FILTER] = filter
     }
 
     fun search(query: String) {
+        savedStateHandle[KEY_QUERY] = query
         var cursor: BundleCursor? = null
 
         fun StreamBundle.flatApps(): List<App> =
@@ -123,6 +134,8 @@ class SearchViewModel @Inject constructor(
     }
 
     companion object {
+        private const val KEY_QUERY = "query"
+        private const val KEY_FILTER = "filter"
         private val PACKAGE_NAME = Regex("^[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+$")
     }
 }
