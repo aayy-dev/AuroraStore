@@ -81,7 +81,10 @@ sealed class Screen : NavKey, Parcelable {
 
     @Serializable
     @TypeParceler<StreamCluster, StreamClusterParceler>
-    data class StreamBrowse(val streamCluster: StreamCluster) : Screen()
+    data class StreamBrowse(
+        @Serializable(with = StreamClusterJsonSerializer::class)
+        val streamCluster: StreamCluster
+    ) : Screen()
 
     @Serializable
     data class ExpandedStreamBrowse(val title: String, val browseUrl: String) : Screen()
