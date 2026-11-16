@@ -9,6 +9,7 @@ package com.aurora.store.compose.ui.details
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.text.format.Formatter
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,18 +44,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
@@ -120,9 +122,11 @@ import com.aurora.store.compose.ui.tv.TvAppRow
 import com.aurora.store.compose.ui.tv.TvDetailsHeader
 import com.aurora.store.compose.ui.tv.TvInfo
 import com.aurora.store.compose.ui.tv.TvInfoRow
+import com.aurora.store.compose.ui.tv.TvInset
 import com.aurora.store.compose.ui.tv.TvMinimalScroll
 import com.aurora.store.compose.ui.tv.TvRatingsRow
 import com.aurora.store.compose.ui.tv.TvScreenshotsRow
+import com.aurora.store.compose.ui.tv.tvReadable
 import com.aurora.store.data.installer.AppInstaller
 import com.aurora.store.data.model.AppState
 import com.aurora.store.data.model.ExodusTracker
@@ -133,6 +137,7 @@ import com.aurora.store.data.model.StorageRequirement
 import com.aurora.store.data.providers.PermissionProvider.Companion.isGranted
 import com.aurora.store.data.providers.PermissionProvider.Companion.isPermittedToInstall
 import com.aurora.store.data.room.account.Account
+import com.aurora.store.util.CommonUtil
 import com.aurora.store.util.FlavouredUtil
 import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.Preferences
@@ -612,15 +617,86 @@ private fun ScreenContentApp(
         }
     }
 
+    /** Labels, enabled flags and callbacks of the two action buttons for [currentState]. */
+    @Composable
+    fun actionsFor(currentState: AppState): ActionSpec {
+        if (isChecking) {
+            return ActionSpec(
+                primary = stringResource(R.string.action_open),
+                secondary = stringResource(R.string.action_cancel),
+                primaryEnabled = false,
+                onSecondary = ::onCancelCheck
+            )
+        }
+        return when (currentState) {
+            is AppState.Queued,
+            is AppState.Purchasing,
+            is AppState.Downloading,
+            is AppState.Verifying,
+            is AppState.Installing -> ActionSpec(
+                primary = stringResource(R.string.action_open),
+                secondary = stringResource(R.string.action_cancel),
+                primaryEnabled = false,
+                onSecondary = onCancelDownload
+            )
+
+            is AppState.Updatable -> ActionSpec(
+                primary = stringResource(R.string.action_update),
+                secondary = stringResource(R.string.action_uninstall),
+                onPrimary = ::onUpdateClicked,
+                onSecondary = onUninstall
+            )
+
+            is AppState.Installed -> {
+                val canOpen = remember(app.packageName) {
+                    PackageUtil.getLaunchIntent(context, app.packageName) != null
+                }
+                ActionSpec(
+                    primary = stringResource(R.string.action_open),
+                    secondary = stringResource(R.string.action_uninstall),
+                    primaryEnabled = canOpen,
+                    onPrimary = onOpen,
+                    onSecondary = onUninstall
+                )
+            }
+
+            else -> ActionSpec(
+                primary = if (currentState is AppState.Archived) {
+                    stringResource(R.string.action_unarchive)
+                } else {
+                    if (app.isFree) stringResource(R.string.action_install) else app.price
+                },
+                secondary = stringResource(R.string.title_manual_download),
+                primaryEnabled = canAcquire,
+                secondaryEnabled = canAcquire,
+                onPrimary = { onInstall() },
+                onSecondary = { showExtraPane(ExtraScreen.ManualDownload) }
+            )
+        }
+    }
+
+    @Composable
+    fun ShowActions(spec: ActionSpec) {
+        Actions(
+            primaryActionDisplayName = spec.primary,
+            secondaryActionDisplayName = spec.secondary,
+            isPrimaryActionEnabled = spec.primaryEnabled,
+            isSecondaryActionEnabled = spec.secondaryEnabled,
+            onPrimaryAction = spec.onPrimary,
+            onSecondaryAction = spec.onSecondary
+        )
+    }
+
     @Composable
     fun SetupActions() {
+        // TV keeps the same two buttons through state changes (Install -> Cancel -> Open), so the
+        // remote's focus stays on them instead of dropping when the buttons are replaced
+        if (isTv) {
+            ShowActions(actionsFor(state))
+            return
+        }
         if (isChecking) {
-            Actions(
-                primaryActionDisplayName = stringResource(R.string.action_open),
-                secondaryActionDisplayName = stringResource(R.string.action_cancel),
-                isPrimaryActionEnabled = false,
-                onSecondaryAction = ::onCancelCheck
-            )
+            ShowActions(actionsFor(state))
             return
         }
         AnimatedContent(
@@ -629,69 +705,7 @@ private fun ScreenContentApp(
             transitionSpec = { fadeIn() togetherWith fadeOut() },
             label = "Actions"
         ) { currentState ->
-            when (currentState) {
-                is AppState.Queued,
-                is AppState.Purchasing,
-                is AppState.Downloading -> {
-                    Actions(
-                        primaryActionDisplayName = stringResource(R.string.action_open),
-                        secondaryActionDisplayName = stringResource(R.string.action_cancel),
-                        isPrimaryActionEnabled = false,
-                        onSecondaryAction = onCancelDownload
-                    )
-                }
-
-                is AppState.Verifying,
-                is AppState.Installing -> {
-                    Actions(
-                        primaryActionDisplayName = stringResource(R.string.action_open),
-                        secondaryActionDisplayName = stringResource(R.string.action_cancel),
-                        isPrimaryActionEnabled = false,
-                        onSecondaryAction = onCancelDownload
-                    )
-                }
-
-                is AppState.Updatable -> {
-                    Actions(
-                        primaryActionDisplayName = stringResource(R.string.action_update),
-                        secondaryActionDisplayName = stringResource(R.string.action_uninstall),
-                        onPrimaryAction = ::onUpdateClicked,
-                        onSecondaryAction = onUninstall
-                    )
-                }
-
-                is AppState.Installed -> {
-                    val canOpen = remember(app.packageName) {
-                        PackageUtil.getLaunchIntent(context, app.packageName) != null
-                    }
-                    Actions(
-                        primaryActionDisplayName = stringResource(R.string.action_open),
-                        secondaryActionDisplayName = stringResource(R.string.action_uninstall),
-                        onPrimaryAction = onOpen,
-                        onSecondaryAction = onUninstall,
-                        isPrimaryActionEnabled = canOpen
-                    )
-                }
-
-                else -> {
-                    val primaryActionName = if (currentState is AppState.Archived) {
-                        stringResource(R.string.action_unarchive)
-                    } else {
-                        if (app.isFree) stringResource(R.string.action_install) else app.price
-                    }
-
-                    Actions(
-                        primaryActionDisplayName = primaryActionName,
-                        secondaryActionDisplayName = stringResource(
-                            R.string.title_manual_download
-                        ),
-                        isPrimaryActionEnabled = canAcquire,
-                        isSecondaryActionEnabled = canAcquire,
-                        onPrimaryAction = ::onInstall,
-                        onSecondaryAction = { showExtraPane(ExtraScreen.ManualDownload) }
-                    )
-                }
-            }
+            ShowActions(actionsFor(currentState))
         }
     }
 
@@ -863,22 +877,71 @@ private fun ScreenContentApp(
 
     @Composable
     fun TvMainPane() {
-        val actionsFocus = remember { FocusRequester() }
-        RequestFocusOnce(actionsFocus)
+        val listState = rememberLazyListState()
+        val scope = rememberCoroutineScope()
+
+        // Remember which section had focus, so coming back from a sub-page (screenshots,
+        // reviews, permissions...) returns to it instead of jumping back to the buttons
+        var lastSection by rememberSaveable { mutableStateOf(TV_SECTION_ACTIONS) }
+        val sectionFocus = remember { mutableMapOf<String, FocusRequester>() }
+        fun requester(key: String) = sectionFocus.getOrPut(key) { FocusRequester() }
+        val entrySection = remember { lastSection }
+        RequestFocusOnce(requester(entrySection))
+
+        // A Column, since phone sections emit a header and their content as siblings
+        @Composable
+        fun Section(key: String, content: @Composable () -> Unit) {
+            Column(
+                modifier = Modifier
+                    .focusRequester(requester(key))
+                    .onFocusChanged { if (it.hasFocus) lastSection = key }
+            ) {
+                content()
+            }
+        }
+
+        // Phone sections reused on TV, indented to the TV margin
+        @Composable
+        fun PhoneSection(key: String, content: @Composable () -> Unit) {
+            Section(key) {
+                Column(modifier = Modifier.padding(horizontal = 40.dp)) { content() }
+            }
+        }
+
+        val status = when (state) {
+            is AppState.Downloading -> "${Formatter.formatShortFileSize(context, state.speed)}/s" +
+                ", " + CommonUtil.getETAString(context, state.timeRemaining)
+            is AppState.Installing -> stringResource(R.string.action_installing)
+            is AppState.Queued -> stringResource(R.string.status_queued)
+            is AppState.Purchasing -> stringResource(R.string.preparing_to_download)
+            is AppState.Verifying -> stringResource(R.string.verifying_downloads)
+            else -> null
+        }
 
         TvMinimalScroll(margin = 48.dp) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background),
+                state = listState,
                 contentPadding = PaddingValues(bottom = 48.dp)
             ) {
                 item(key = "header") {
                     TvDetailsHeader(
                         app = app,
+                        status = status,
                         actions = {
                             Row(
-                                modifier = Modifier.focusRequester(actionsFocus),
+                                modifier = Modifier
+                                    .focusRequester(requester(TV_SECTION_ACTIONS))
+                                    .onFocusChanged {
+                                        if (it.hasFocus) {
+                                            lastSection = TV_SECTION_ACTIONS
+                                            // Nothing above the buttons can take focus, so
+                                            // bring the app's name and description back too
+                                            scope.launch { listState.animateScrollToItem(0) }
+                                        }
+                                    },
                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -890,25 +953,43 @@ private fun ScreenContentApp(
                 }
 
                 item(key = "stats") {
-                    Box(modifier = Modifier.padding(horizontal = 40.dp)) { Tags(app = app) }
+                    Column(modifier = Modifier.padding(horizontal = 40.dp)) { Tags(app = app) }
+                }
+
+                item(key = "listing") {
+                    PhoneSection("listing") {
+                        PlayListing(
+                            app = app,
+                            categoryIconUrl = categoryIconUrl,
+                            onCategoryClick = { onNavigateTo(Destination.CategoryBrowse(it)) },
+                            onTopChartClick = ::onTopChartClick,
+                            onBrowse = { title, browseUrl ->
+                                onNavigateTo(Destination.ExpandedStreamBrowse(title, browseUrl))
+                            }
+                        )
+                    }
                 }
 
                 item(key = "screenshots") {
-                    TvScreenshotsRow(
-                        title = stringResource(R.string.details_screenshots),
-                        screenshots = app.screenshots,
-                        onClick = { showExtraPane(ExtraScreen.Screenshot(it)) }
-                    )
+                    Section("screenshots") {
+                        TvScreenshotsRow(
+                            title = stringResource(R.string.details_screenshots),
+                            screenshots = app.screenshots,
+                            onClick = { showExtraPane(ExtraScreen.Screenshot(it)) }
+                        )
+                    }
                 }
 
                 item(key = "ratings") {
-                    TvRatingsRow(
-                        title = stringResource(R.string.details_ratings),
-                        rating = app.rating,
-                        reviews = featuredReviews,
-                        ratingsCountLabel = app.rating.abbreviatedLabel,
-                        onOpenReviews = { showExtraPane(ExtraScreen.Review) }
-                    )
+                    Section("ratings") {
+                        TvRatingsRow(
+                            title = stringResource(R.string.details_ratings),
+                            rating = app.rating,
+                            reviews = featuredReviews,
+                            ratingsCountLabel = app.rating.abbreviatedLabel,
+                            onOpenReviews = { showExtraPane(ExtraScreen.Review) }
+                        )
+                    }
                 }
 
                 item(key = "info") {
@@ -920,35 +1001,18 @@ private fun ScreenContentApp(
                                 onClick = { showExtraPane(ExtraScreen.More) }
                             )
                         )
-                        add(
-                            TvInfo(
-                                title = stringResource(R.string.details_changelog),
-                                subtitle = if (app.changes.isBlank()) {
-                                    stringResource(R.string.details_changelog_unavailable)
-                                } else {
-                                    AnnotatedString.fromHtml(app.changes).text
-                                },
-                                onClick = { showExtraPane(ExtraScreen.More) }
-                            )
-                        )
-                        add(
-                            TvInfo(
-                                title = stringResource(R.string.details_permission),
-                                subtitle = if (app.permissions.isNotEmpty()) {
-                                    stringResource(
+                        if (app.permissions.isNotEmpty()) {
+                            add(
+                                TvInfo(
+                                    title = stringResource(R.string.details_permission),
+                                    subtitle = stringResource(
                                         R.string.permissions_requested,
                                         app.permissions.size
-                                    )
-                                } else {
-                                    stringResource(R.string.details_no_permission)
-                                },
-                                onClick = {
-                                    if (app.permissions.isNotEmpty()) {
-                                        showExtraPane(ExtraScreen.Permission)
-                                    }
-                                }
+                                    ),
+                                    onClick = { showExtraPane(ExtraScreen.Permission) }
+                                )
                             )
-                        )
+                        }
                         if (exodusReport != null && exodusReport.id != -1) {
                             add(
                                 TvInfo(
@@ -968,51 +1032,83 @@ private fun ScreenContentApp(
                         }
                         add(
                             TvInfo(
-                                title = stringResource(R.string.details_compatibility_title),
-                                subtitle = stringResource(
-                                    if (app.requiresGMS()) {
-                                        R.string.details_compatibility_gms_required_title
-                                    } else {
-                                        R.string.details_compatibility_gms_not_required_title
-                                    }
-                                ),
-                                onClick = { showExtraPane(ExtraScreen.More) }
-                            )
-                        )
-                        add(
-                            TvInfo(
                                 title = stringResource(R.string.details_dev_profile),
-                                subtitle = listOf(
-                                    app.developerName,
-                                    app.developerWebsite,
-                                    app.developerEmail
-                                ).filter { it.isNotBlank() }.joinToString("\n"),
+                                subtitle = app.developerName,
                                 onClick = { showExtraPane(Screen.DevProfile(app.developerName)) }
                             )
                         )
                     }
-                    TvInfoRow(title = stringResource(R.string.details_more_info), items = infoItems)
+                    Section("info") {
+                        TvInfoRow(
+                            title = stringResource(R.string.details_more_info),
+                            items = infoItems
+                        )
+                    }
+                }
+
+                item(key = "changelog") {
+                    Section("changelog") {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 24.dp)
+                                .tvReadable(listState, key = "changelog")
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Changelog(changelog = app.changes)
+                        }
+                    }
+                }
+
+                item(key = "compatibility") {
+                    PhoneSection("compatibility") {
+                        Compatibility(needsGms = app.requiresGMS(), plexusScores = plexusScores)
+                    }
+                }
+
+                if (dataSafetyReport != null) {
+                    item(key = "data-safety") {
+                        PhoneSection("data-safety") {
+                            DataSafety(
+                                report = dataSafetyReport,
+                                privacyPolicyUrl = app.privacyPolicyUrl
+                            )
+                        }
+                    }
+                }
+
+                item(key = "developer") {
+                    PhoneSection("developer") {
+                        DeveloperDetails(
+                            address = app.developerAddress,
+                            website = app.developerWebsite,
+                            email = app.developerEmail
+                        )
+                    }
                 }
 
                 // Reviews can only be submitted by personal accounts for installed apps.
                 if (!isAnonymous && app.isInstalled) {
                     item(key = "user-review") {
-                        UserReview(
-                            review = userReview,
-                            onSubmit = onSubmitReview,
-                            onDelete = onDeleteReview
-                        )
+                        PhoneSection("user-review") {
+                            UserReview(
+                                review = userReview,
+                                onSubmit = onSubmitReview,
+                                onDelete = onDeleteReview
+                            )
+                        }
                     }
                 }
 
                 if (!isAnonymous && app.testingProgram?.isAvailable == true) {
                     item(key = "testing") {
-                        Testing(
-                            isSubscribed = testingProgramSubscribed
-                                ?: app.testingProgram!!.isSubscribed,
-                            isUpdating = testingProgramUpdating,
-                            onTestingSubscriptionChange = onTestingSubscriptionChange
-                        )
+                        PhoneSection("testing") {
+                            Testing(
+                                isSubscribed = testingProgramSubscribed
+                                    ?: app.testingProgram!!.isSubscribed,
+                                isUpdating = testingProgramUpdating,
+                                onTestingSubscriptionChange = onTestingSubscriptionChange
+                            )
+                        }
                     }
                 }
 
@@ -1021,15 +1117,17 @@ private fun ScreenContentApp(
                     ?.filter { it.title.isNotBlank() && it.apps.isNotEmpty() }
                     ?.forEach { cluster ->
                         item(key = "suggestions-${cluster.id}") {
-                            TvAppRow(
-                                title = cluster.title,
-                                apps = cluster.apps,
-                                hasMore = cluster.hasNext(),
-                                onLoadMore = { onLoadMoreCluster(cluster) },
-                                onAppClick = {
-                                    onNavigateTo(Destination.AppDetails(it.packageName))
-                                }
-                            )
+                            Section("suggestions-${cluster.id}") {
+                                TvAppRow(
+                                    title = cluster.title,
+                                    apps = cluster.apps,
+                                    hasMore = cluster.hasNext(),
+                                    onLoadMore = { onLoadMoreCluster(cluster) },
+                                    onAppClick = {
+                                        onNavigateTo(Destination.AppDetails(it.packageName))
+                                    }
+                                )
+                            }
                         }
                     }
             }
@@ -1130,7 +1228,15 @@ private fun ScreenContentApp(
         supportingPane = { AnimatedPane { SupportingPane() } },
         extraPane = {
             scaffoldNavigator.currentDestination?.contentKey?.let { screen ->
-                AnimatedPane { ExtraPane(screen) }
+                AnimatedPane {
+                    // On TV, keep these phone-style pages off the screen edges, except the
+                    // full screen screenshot viewer
+                    if (screen is ExtraScreen.Screenshot) {
+                        ExtraPane(screen)
+                    } else {
+                        TvInset { ExtraPane(screen) }
+                    }
+                }
             }
         }
     )
@@ -1207,3 +1313,18 @@ private fun AppDetailsScreenPreviewLoading() {
 private fun AppDetailsScreenPreviewError() {
     ScreenContentError()
 }
+
+/** Focus section of the TV details page that holds the action buttons. */
+private const val TV_SECTION_ACTIONS = "actions"
+
+/**
+ * Contents of the two action buttons on app details.
+ */
+private data class ActionSpec(
+    val primary: String,
+    val secondary: String,
+    val primaryEnabled: Boolean = true,
+    val secondaryEnabled: Boolean = true,
+    val onPrimary: () -> Unit = {},
+    val onSecondary: () -> Unit = {}
+)

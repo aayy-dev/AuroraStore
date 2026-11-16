@@ -10,6 +10,7 @@ import android.text.format.Formatter
 import android.util.Base64
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -52,6 +53,7 @@ import com.aurora.store.compose.composable.app.AppListItem
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.tvReadable
 import com.aurora.store.viewmodel.details.AppDetailsViewModel
 import com.aurora.store.viewmodel.details.MoreViewModel
 
@@ -116,9 +118,9 @@ private fun ScreenContent(
 
                 item {
                     Text(
-                        modifier = Modifier.padding(
-                            horizontal = dimensionResource(R.dimen.spacing_medium)
-                        ),
+                        modifier = Modifier
+                            .tvReadable(listState, index = 1)
+                            .padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
                         text = AnnotatedString.fromHtml(
                             htmlString = app.description
                         ),
@@ -137,12 +139,21 @@ private fun ScreenContent(
 
                 if (app.fileList.isNotEmpty()) {
                     item {
-                        AppFiles(files = app.fileList)
+                        Column(modifier = Modifier.tvReadable(listState, index = 3)) {
+                            AppFiles(files = app.fileList)
+                        }
                     }
                 }
 
                 item {
-                    AppInfoMore(app = app)
+                    Column(
+                        modifier = Modifier.tvReadable(
+                            listState,
+                            index = if (app.fileList.isNotEmpty()) 4 else 3
+                        )
+                    ) {
+                        AppInfoMore(app = app)
+                    }
                 }
             }
             ScrollHint(

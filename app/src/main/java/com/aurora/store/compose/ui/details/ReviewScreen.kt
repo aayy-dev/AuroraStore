@@ -55,6 +55,7 @@ import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.details.ReviewListItem
 import com.aurora.store.compose.preview.ReviewPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.tvReadable
 import com.aurora.store.viewmodel.details.AppDetailsViewModel
 import com.aurora.store.viewmodel.details.ReviewViewModel
 import kotlin.random.Random
@@ -123,7 +124,14 @@ private fun ScreenContent(
                     )
                 }
 
-                else -> {
+                else -> if (reviews.itemCount == 0 &&
+                    reviews.loadState.append.endOfPaginationReached
+                ) {
+                    Placeholder(
+                        painter = painterResource(R.drawable.ic_star_filled),
+                        message = stringResource(R.string.details_no_reviews)
+                    )
+                } else {
                     val listState = rememberLazyListState()
                     Box(modifier = Modifier.fillMaxSize()) {
                         LazyColumn(
@@ -135,7 +143,9 @@ private fun ScreenContent(
                                 key = reviews.itemKey { it.commentId }
                             ) { index ->
                                 reviews[index]?.let { review ->
-                                    ReviewListItem(review = review, showReply = true)
+                                    Box(modifier = Modifier.tvReadable(listState, index)) {
+                                        ReviewListItem(review = review, showReply = true)
+                                    }
                                 }
                             }
                         }

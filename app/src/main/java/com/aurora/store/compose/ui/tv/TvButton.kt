@@ -20,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button as TvMaterialButton
@@ -44,31 +46,40 @@ fun TvButton(
     label: String? = null,
     @DrawableRes iconRes: Int? = null,
     contentDescription: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    stateDescription: String? = null
 ) {
+    // A disabled button stays focusable (it just doesn't act), so focus isn't dropped when an
+    // action becomes unavailable under the remote, e.g. "Open" while an install downloads
     TvMaterialButton(
         modifier = modifier
             .heightIn(min = 44.dp)
-            .then(
-                if (contentDescription != null) {
-                    Modifier.semantics { this.contentDescription = contentDescription }
-                } else {
-                    Modifier
-                }
-            ),
-        onClick = onClick,
-        enabled = enabled,
+            .semantics {
+                if (contentDescription != null) this.contentDescription = contentDescription
+                if (stateDescription != null) this.stateDescription = stateDescription
+                if (!enabled) disabled()
+            },
+        onClick = { if (enabled) onClick() },
         shape = ButtonDefaults.shape(shape = CircleShape),
-        colors = ButtonDefaults.colors(
-            containerColor = TvSelectedPill,
-            contentColor = TvOnSurface,
-            focusedContainerColor = TvFocusedSurface,
-            focusedContentColor = TvOnFocusedSurface,
-            pressedContainerColor = TvFocusedSurface,
-            pressedContentColor = TvOnFocusedSurface,
-            disabledContainerColor = TvSelectedPill.copy(alpha = 0.5f),
-            disabledContentColor = TvOnSurfaceMuted
-        ),
+        colors = if (enabled) {
+            ButtonDefaults.colors(
+                containerColor = TvSelectedPill,
+                contentColor = TvOnSurface,
+                focusedContainerColor = TvFocusedSurface,
+                focusedContentColor = TvOnFocusedSurface,
+                pressedContainerColor = TvFocusedSurface,
+                pressedContentColor = TvOnFocusedSurface
+            )
+        } else {
+            ButtonDefaults.colors(
+                containerColor = TvSelectedPill.copy(alpha = 0.5f),
+                contentColor = TvOnSurfaceMuted,
+                focusedContainerColor = TvFocusedSurface.copy(alpha = 0.4f),
+                focusedContentColor = TvOnSurface,
+                pressedContainerColor = TvFocusedSurface.copy(alpha = 0.4f),
+                pressedContentColor = TvOnSurface
+            )
+        },
         scale = ButtonDefaults.scale(focusedScale = 1.05f),
         contentPadding = if (label == null) {
             PaddingValues(horizontal = 12.dp, vertical = 10.dp)

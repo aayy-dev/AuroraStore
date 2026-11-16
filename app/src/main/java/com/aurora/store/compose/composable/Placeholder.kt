@@ -27,7 +27,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvButton
 
 /**
  * Full-screen empty/error placeholder: centered icon + message and an optional action button.
@@ -63,12 +66,16 @@ fun Placeholder(
             textAlign = TextAlign.Center
         )
         if (actionLabel != null && onAction != null) {
-            Button(onClick = onAction) {
-                Text(
-                    text = actionLabel,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            if (LocalUI.current == UI.TV) {
+                TvButton(label = actionLabel, onClick = onAction)
+            } else {
+                Button(onClick = onAction) {
+                    Text(
+                        text = actionLabel,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }

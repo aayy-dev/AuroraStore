@@ -24,6 +24,8 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import com.aurora.store.BuildConfig
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
 @Composable
@@ -55,7 +57,12 @@ fun BlackListItem(
             )
         },
         trailing = {
-            Checkbox(checked = isChecked, enabled = isEnabled, onCheckedChange = { onClick() })
+            Checkbox(
+                checked = isChecked,
+                enabled = isEnabled,
+                // On TV the row itself is the only focus stop for this action
+                onCheckedChange = if (LocalUI.current == UI.TV) null else { _ -> onClick() }
+            )
         }
     )
 }

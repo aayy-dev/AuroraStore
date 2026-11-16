@@ -21,7 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
@@ -43,6 +43,8 @@ import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.theme.TvDimens
 import com.aurora.store.compose.ui.tv.TvChip
+import com.aurora.store.compose.ui.tv.tvHeader
+import com.aurora.store.compose.ui.tv.tvRowEnds
 import com.aurora.store.util.Preferences
 import com.aurora.store.viewmodel.category.CategoryViewModel
 import com.aurora.store.viewmodel.homestream.StreamViewModel
@@ -68,8 +70,14 @@ fun AppsGamesScreen(
 ) {
     val context = LocalContext.current
 
+    // Prefetch once per screen: on TV this screen leaves composition on every section switch, and
+    // a second prefetch could land after (and overwrite) the chart the user picked
+    var topChartPrefetched by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        topChartViewModel.getStreamCluster(category(pageType), TopChartType.TOP_SELLING_FREE)
+        if (!topChartPrefetched) {
+            topChartPrefetched = true
+            topChartViewModel.getStreamCluster(category(pageType), TopChartType.TOP_SELLING_FREE)
+        }
     }
 
     val isForYouEnabled = Preferences.getBoolean(context, Preferences.PREFERENCE_FOR_YOU)
@@ -167,23 +175,26 @@ private fun TvAppsGamesContent(
     categoryViewModel: CategoryViewModel,
     onNavigateTo: (Destination) -> Unit
 ) {
-    var selected by rememberSaveable { mutableIntStateOf(0) }
-    val tab = tabs[selected.coerceIn(0, tabs.size - 1)]
+    // Saved by name, so turning the For you page on or off doesn't shift the selection
+    var selectedName by rememberSaveable { mutableStateOf(tabs.first().name) }
+    val tab = tabs.firstOrNull { it.name == selectedName } ?: tabs.first()
     val saveableStateHolder = rememberSaveableStateHolder()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .tvHeader()
                 .focusRestorer()
                 .padding(horizontal = TvDimens.ScreenPaddingHorizontal - 16.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
         ) {
             tabs.forEachIndexed { index, item ->
                 TvChip(
+                    modifier = Modifier.tvRowEnds(index, tabs.size),
                     label = stringResource(item.titleRes),
-                    selected = index == selected,
-                    onClick = { selected = index }
+                    selected = item == tab,
+                    onClick = { selectedName = item.name }
                 )
             }
         }
@@ -195,6 +206,7 @@ private fun TvAppsGamesContent(
                         pageType = pageType,
                         viewModel = streamViewModel,
                         onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) },
+                        onMoreClick = { onNavigateTo(Destination.StreamBrowse(it)) },
                         onClusterScrolled = { cluster ->
                             streamViewModel.observeCluster(category(pageType), cluster)
                         },

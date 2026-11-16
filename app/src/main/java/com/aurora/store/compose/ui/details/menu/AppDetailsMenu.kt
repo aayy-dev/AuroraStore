@@ -68,6 +68,10 @@ fun AppDetailsMenu(
         TvButton(
             iconRes = favoriteIcon,
             contentDescription = stringResource(R.string.action_favourite),
+            // Says whether it's on, as the phone's toggle button does
+            stateDescription = stringResource(
+                if (isFavorite) R.string.state_on else R.string.state_off
+            ),
             onClick = { onClick(MenuItem.FAVORITE) }
         )
         TvButton(

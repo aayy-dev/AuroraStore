@@ -30,6 +30,8 @@ import com.aurora.extensions.setAppTheme
 import com.aurora.store.R
 import com.aurora.store.compose.composable.PreferenceHeader
 import com.aurora.store.compose.composable.TopAppBar
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.preferences.network.SingleChoiceDialog
 import com.aurora.store.util.Preferences
@@ -58,6 +60,7 @@ private fun ScreenContent() {
     var forYou by remember {
         mutableStateOf(Preferences.getBoolean(context, PREFERENCE_FOR_YOU, true))
     }
+    val isTv = LocalUI.current == UI.TV
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTabDialog by remember { mutableStateOf(false) }
 
@@ -105,12 +108,15 @@ private fun ScreenContent() {
             item {
                 PreferenceHeader(title = stringResource(R.string.pref_ui_appearance))
             }
-            item {
-                ListItem(
-                    modifier = Modifier.clickable { showThemeDialog = true },
-                    headlineContent = { Text(stringResource(R.string.pref_ui_theme)) },
-                    supportingContent = { Text(themeEntries.getOrElse(themeStyle) { "" }) }
-                )
+            // TV is always dark, so the theme choice would do nothing there
+            if (!isTv) {
+                item {
+                    ListItem(
+                        modifier = Modifier.clickable { showThemeDialog = true },
+                        headlineContent = { Text(stringResource(R.string.pref_ui_theme)) },
+                        supportingContent = { Text(themeEntries.getOrElse(themeStyle) { "" }) }
+                    )
+                }
             }
             item { HorizontalDivider() }
             item {

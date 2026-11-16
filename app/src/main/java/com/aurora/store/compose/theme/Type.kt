@@ -39,9 +39,9 @@ val StoreFontFamily = FontFamily(
 
 /**
  * Latin-script languages that need letters the bundled font doesn't have (Kabyle ɛ ɣ ḍ, Esperanto
- * ĉ ĝ ŝ), so mixing it with system fallback glyphs would look broken.
+ * ĉ ĝ ŝ, Asturian ḥ ḷ), so mixing it with system fallback glyphs would look broken.
  */
-private val unsupportedLatinLanguages = setOf("kab", "eo")
+private val unsupportedLatinLanguages = setOf("kab", "eo", "ast")
 
 /**
  * Whether [StoreFontFamily] can render [locale] properly.

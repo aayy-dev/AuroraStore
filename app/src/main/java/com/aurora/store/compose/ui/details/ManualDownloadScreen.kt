@@ -241,9 +241,10 @@ private fun ScreenContent(
 
                 Button(
                     modifier = Modifier.weight(1F),
-                    enabled = !state.inProgress() && versionCode.text.isNotBlank(),
+                    enabled = !state.inProgress() &&
+                        versionCode.text.toLongOrNull() != null,
                     onClick = {
-                        onRequestInstall(versionCode.text.toLong())
+                        versionCode.text.toLongOrNull()?.let(onRequestInstall)
                         focusManager.clearFocus()
                     }
                 ) {

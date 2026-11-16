@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -27,12 +29,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
@@ -54,6 +54,7 @@ import com.aurora.store.compose.theme.TvDimens
 import com.aurora.store.compose.theme.TvOnSurface
 import com.aurora.store.compose.theme.TvSectionTitle
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 private const val LOAD_MORE_THRESHOLD = 2
 
@@ -65,17 +66,49 @@ private val GridPivot = 16.dp
 
 /**
  * Requests focus from [requester] once its target has been laid out, retrying for a few frames
- * because lazy items attach after the first composition.
+ * because lazy items attach after the first composition. It stays out of the way while the user
+ * is in the screen's header (see [LocalTvFocusGuard]), e.g. if content finishes loading after
+ * they moved up to the top bar.
  */
 @Composable
 fun RequestFocusOnce(requester: FocusRequester) {
+    val guard = LocalTvFocusGuard.current
     LaunchedEffect(requester) {
         repeat(10) {
             withFrameNanos { }
+            if (guard.blocked) return@LaunchedEffect
             if (runCatching { requester.requestFocus() }.getOrDefault(false)) {
                 return@LaunchedEffect
             }
         }
+    }
+}
+
+/**
+ * Remembers which item of a TV list had focus, across navigation and process death, without
+ * triggering recomposition on every D-pad move (it's only read when the list comes back).
+ */
+@Composable
+private fun rememberFocusMemory(size: Int): IntArray = rememberSaveable(
+    saver = androidx.compose.runtime.saveable.Saver(
+        save = { it.toList() },
+        restore = { it.toIntArray() }
+    )
+) { IntArray(size) }
+
+/**
+ * Calls [onReachedEnd] whenever the user scrolls within [threshold] items of the end of a laid out
+ * list, but never for an empty or not yet measured one.
+ */
+@Composable
+private fun LoadMoreEffect(state: LazyListState, threshold: Int, onReachedEnd: () -> Unit) {
+    val callback by rememberUpdatedState(onReachedEnd)
+    LaunchedEffect(state) {
+        snapshotFlow {
+            val info = state.layoutInfo
+            val last = info.visibleItemsInfo.lastOrNull()?.index ?: return@snapshotFlow false
+            info.totalItemsCount > 0 && last >= info.totalItemsCount - threshold
+        }.distinctUntilChanged().filter { it }.collect { callback() }
     }
 }
 
@@ -95,16 +128,8 @@ fun TvStreamRows(
     onScrolledToEnd: () -> Unit = {}
 ) {
     val listState = rememberLazyListState()
-    val bundleLoaded = streamBundle != null
-
-    LaunchedEffect(listState, bundleLoaded) {
-        snapshotFlow {
-            val last = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-            last >= listState.layoutInfo.totalItemsCount - LOAD_MORE_THRESHOLD
-        }.distinctUntilChanged().collect { reachedEnd ->
-            if (reachedEnd && bundleLoaded) onScrolledToEnd()
-        }
-    }
+    // Kept above the loading states so a brief reload doesn't forget the position
+    val focusMemory = rememberFocusMemory(2)
 
     if (streamBundle == null) {
         Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -113,14 +138,16 @@ fun TvStreamRows(
         return
     }
 
-    val clusters = streamBundle.clusters
-        .distinctBy { it.id }
-        .map { cluster -> cluster.copy(apps = cluster.apps.distinctBy { it.packageName }) }
-        .filter { cluster ->
-            cluster.apps.isNotEmpty() &&
-                cluster.title.isNotBlank() &&
-                (!filterSingleAppClusters || cluster.apps.size > 1)
-        }
+    val clusters = remember(streamBundle, filterSingleAppClusters) {
+        streamBundle.clusters
+            .distinctBy { it.id }
+            .map { cluster -> cluster.copy(apps = cluster.apps.distinctBy { it.packageName }) }
+            .filter { cluster ->
+                cluster.apps.isNotEmpty() &&
+                    cluster.title.isNotBlank() &&
+                    (!filterSingleAppClusters || cluster.apps.size > 1)
+            }
+    }
 
     if (clusters.isEmpty()) {
         Placeholder(
@@ -146,10 +173,12 @@ fun TvStreamRows(
         return
     }
 
+    LoadMoreEffect(listState, LOAD_MORE_THRESHOLD) {
+        if (streamBundle.hasNext()) onScrolledToEnd()
+    }
+
     // Focus the last focused card (the first one on a fresh start) whenever the rows come back,
     // e.g. after returning from an app's details, so the remote picks up where it left off
-    var focusedRow by rememberSaveable { mutableIntStateOf(0) }
-    var focusedCard by rememberSaveable { mutableIntStateOf(0) }
     val restoreRequester = remember { FocusRequester() }
     RequestFocusOnce(restoreRequester)
 
@@ -172,11 +201,11 @@ fun TvStreamRows(
                     } else {
                         null
                     },
-                    restoreCardIndex = if (index == focusedRow) focusedCard else null,
+                    restoreCardIndex = if (index == focusMemory[0]) focusMemory[1] else null,
                     restoreRequester = restoreRequester,
                     onCardFocused = { card ->
-                        focusedRow = index
-                        focusedCard = card
+                        focusMemory[0] = index
+                        focusMemory[1] = card
                     },
                     onAppClick = onAppClick
                 )
@@ -207,20 +236,12 @@ fun TvAppRow(
     onCardFocused: (Int) -> Unit = {}
 ) {
     val rowState = rememberLazyListState()
-    val reachedEnd by remember {
-        derivedStateOf {
-            val last = rowState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-            last >= rowState.layoutInfo.totalItemsCount - LOAD_MORE_THRESHOLD
-        }
-    }
-    LaunchedEffect(reachedEnd) {
-        if (reachedEnd && hasMore) onLoadMore()
-    }
+    LoadMoreEffect(rowState, LOAD_MORE_THRESHOLD) { if (hasMore) onLoadMore() }
 
     Column(modifier = modifier) {
         TvSectionTitle(title = title, isFeatured = isFeatured)
 
-        TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
+        TvPivot(leading = TvDimens.ScreenPaddingHorizontal, horizontal = true) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -229,12 +250,15 @@ fun TvAppRow(
                 contentPadding = PaddingValues(horizontal = TvDimens.ScreenPaddingHorizontal),
                 horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing)
             ) {
+                val rowApps = apps.distinctBy { it.packageName }
+                val itemCount = rowApps.size + if (onMoreClick != null) 1 else 0
                 itemsIndexed(
-                    items = apps.distinctBy { it.packageName },
+                    items = rowApps,
                     key = { _, app -> app.packageName }
                 ) { index, app ->
                     TvAppCard(
                         modifier = Modifier
+                            .tvRowEnds(index, itemCount)
                             .then(
                                 if (index == restoreCardIndex && restoreRequester != null) {
                                     Modifier.focusRequester(restoreRequester)
@@ -248,7 +272,12 @@ fun TvAppRow(
                     )
                 }
                 if (onMoreClick != null) {
-                    item(key = "more") { TvMoreCard(onClick = onMoreClick) }
+                    item(key = "more") {
+                        TvMoreCard(
+                            modifier = Modifier.tvRowEnds(itemCount - 1, itemCount),
+                            onClick = onMoreClick
+                        )
+                    }
                 }
             }
         }
@@ -282,7 +311,7 @@ fun TvSectionTitle(title: String, modifier: Modifier = Modifier, isFeatured: Boo
 
 /**
  * Grid of [TvAppCard]s for a single list of apps, loading more near the end. [badge] can label
- * cards (e.g. chart positions) and [header] adds a full-width item on top.
+ * cards (e.g. chart positions).
  */
 @Composable
 fun TvAppGrid(
@@ -294,18 +323,11 @@ fun TvAppGrid(
     badge: ((index: Int) -> String?)? = null
 ) {
     val gridState = rememberLazyGridState()
-    val distinctApps = apps.distinctBy { it.packageName }
-    LaunchedEffect(gridState, hasMore) {
-        snapshotFlow {
-            val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-            last >= gridState.layoutInfo.totalItemsCount - TvDimens.GRID_COLUMNS
-        }.distinctUntilChanged().collect { reachedEnd ->
-            if (reachedEnd && hasMore) onLoadMore()
-        }
-    }
+    val distinctApps = remember(apps) { apps.distinctBy { it.packageName } }
+    GridLoadMoreEffect(gridState) { if (hasMore) onLoadMore() }
 
     // Focus the last focused card (the first one on a fresh start)
-    var focusedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val focusMemory = rememberFocusMemory(1)
     val restoreRequester = remember { FocusRequester() }
     RequestFocusOnce(restoreRequester)
 
@@ -325,19 +347,20 @@ fun TvAppGrid(
             horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            gridItemsIndexed(items = distinctApps, key = { _, app ->
-                app.packageName
-            }) { index, app ->
+            gridItemsIndexed(
+                items = distinctApps,
+                key = { _, app -> app.packageName }
+            ) { index, app ->
                 TvAppCard(
                     modifier = Modifier
                         .then(
-                            if (index == focusedIndex) {
+                            if (index == focusMemory[0]) {
                                 Modifier.focusRequester(restoreRequester)
                             } else {
                                 Modifier
                             }
                         )
-                        .onFocusChanged { if (it.hasFocus) focusedIndex = index },
+                        .onFocusChanged { if (it.hasFocus) focusMemory[0] = index },
                     app = app,
                     badge = badge?.invoke(index),
                     onClick = { onAppClick(app) }
@@ -347,6 +370,21 @@ fun TvAppGrid(
                 item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { LoadingFooter() }
             }
         }
+    }
+}
+
+/**
+ * Grid counterpart of [LoadMoreEffect].
+ */
+@Composable
+internal fun GridLoadMoreEffect(state: LazyGridState, onReachedEnd: () -> Unit) {
+    val callback by rememberUpdatedState(onReachedEnd)
+    LaunchedEffect(state) {
+        snapshotFlow {
+            val info = state.layoutInfo
+            val last = info.visibleItemsInfo.lastOrNull()?.index ?: return@snapshotFlow false
+            info.totalItemsCount > 0 && last >= info.totalItemsCount - TvDimens.GRID_COLUMNS
+        }.distinctUntilChanged().filter { it }.collect { callback() }
     }
 }
 

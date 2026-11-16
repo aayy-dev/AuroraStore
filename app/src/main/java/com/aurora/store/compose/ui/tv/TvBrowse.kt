@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,12 +70,14 @@ fun TvTopCharts(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .tvHeader()
                 .focusRestorer()
                 .padding(horizontal = TvDimens.ScreenPaddingHorizontal - 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             chartTitles.forEachIndexed { index, titleRes ->
                 TvChip(
+                    modifier = Modifier.tvRowEnds(index, chartTitles.size),
                     label = stringResource(titleRes),
                     selected = index == selectedIndex,
                     onClick = { onTabSelected(index) }
@@ -100,11 +103,14 @@ fun TvTopCharts(
                     message = stringResource(R.string.no_apps_available)
                 )
 
-                else -> TvAppGrid(
-                    apps = cluster.apps,
-                    badge = { index -> "${index + 1}" },
-                    onAppClick = onAppClick
-                )
+                // A fresh grid per chart, so switching charts starts at the top
+                else -> key(selectedIndex) {
+                    TvAppGrid(
+                        apps = cluster.apps,
+                        badge = { index -> "${index + 1}" },
+                        onAppClick = onAppClick
+                    )
+                }
             }
         }
     }

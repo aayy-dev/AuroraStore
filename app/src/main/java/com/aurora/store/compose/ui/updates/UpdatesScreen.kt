@@ -6,22 +6,29 @@
 package com.aurora.store.compose.ui.updates
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.store.R
@@ -29,7 +36,10 @@ import com.aurora.store.compose.composable.Placeholder
 import com.aurora.store.compose.composable.SectionHeader
 import com.aurora.store.compose.composable.ShimmerUpdateItem
 import com.aurora.store.compose.composable.app.AppUpdateItem
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
+import com.aurora.store.compose.ui.tv.TvButton
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.room.download.Download
 import com.aurora.store.data.room.update.Update
@@ -87,11 +97,7 @@ fun UpdatesScreen(
     val mainAnyActive = mainEntries.any { it.value.isActive() }
     val approvalAnyActive = approvalEntries.any { it.value.isActive() }
 
-    PullToRefreshBox(
-        modifier = Modifier.fillMaxSize(),
-        isRefreshing = fetchingUpdates,
-        onRefresh = { viewModel.fetchUpdates() }
-    ) {
+    val content: @Composable BoxScope.() -> Unit = {
         when {
             updateMap == null -> {
                 LazyColumn(
@@ -169,6 +175,17 @@ fun UpdatesScreen(
                             SectionHeader(
                                 title = title,
                                 trailing = {
+                                    // Pull to refresh needs a swipe, so TV gets a refresh button
+                                    if (LocalUI.current == UI.TV) {
+                                        TvButton(
+                                            modifier = Modifier.padding(end = 12.dp),
+                                            iconRes = R.drawable.ic_refresh,
+                                            contentDescription = stringResource(
+                                                R.string.check_updates
+                                            ),
+                                            onClick = { viewModel.fetchUpdates() }
+                                        )
+                                    }
                                     UpdateAllButton(
                                         label = actionLabel,
                                         isCancel = mainAnyActive,
@@ -271,6 +288,28 @@ fun UpdatesScreen(
             }
         }
     }
+
+    if (LocalUI.current == UI.TV) {
+        // There's nothing to pull with a remote, and D-pad scrolling could leave the pull
+        // indicator stuck half way, so TV shows a plain progress bar (refresh is a button)
+        Box(modifier = Modifier.fillMaxSize()) {
+            content()
+            if (fetchingUpdates) {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                )
+            }
+        }
+    } else {
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            isRefreshing = fetchingUpdates,
+            onRefresh = { viewModel.fetchUpdates() },
+            content = content
+        )
+    }
 }
 
 private fun Download?.isActive(): Boolean {
@@ -311,6 +350,10 @@ private fun LazyListScope.updateItems(
  */
 @Composable
 private fun UpdateAllButton(label: String, isCancel: Boolean, onClick: () -> Unit) {
+    if (LocalUI.current == UI.TV) {
+        TvButton(label = label, onClick = onClick)
+        return
+    }
     Button(
         onClick = onClick,
         colors = if (isCancel) {
