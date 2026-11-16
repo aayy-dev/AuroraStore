@@ -165,6 +165,12 @@ fun NavDisplay(startDestination: NavKey) {
         }
     }
 
+    // A fast double tap sends the same destination twice before the first screen shows; opening
+    // it twice would take two Backs to leave it
+    fun push(screen: Screen) {
+        if (backstack.lastOrNull() != screen) backstack.add(screen)
+    }
+
     fun navigate(destination: Destination) {
         when (destination) {
             is Destination.Splash -> {
@@ -180,49 +186,49 @@ fun NavDisplay(startDestination: NavKey) {
                 backstack.add(Screen.Main(destination.initialTab))
             }
 
-            is Destination.ExpandedStreamBrowse -> backstack.add(
+            is Destination.ExpandedStreamBrowse -> push(
                 Screen.ExpandedStreamBrowse(destination.title, destination.browseUrl)
             )
 
-            is Destination.CategoryBrowse -> backstack.add(
+            is Destination.CategoryBrowse -> push(
                 Screen.CategoryBrowse(destination.category.title, destination.category.browseUrl)
             )
 
-            is Destination.PermissionRationale -> backstack.add(
+            is Destination.PermissionRationale -> push(
                 Screen.PermissionRationale(destination.permissions)
             )
 
-            is Destination.AppDetails -> backstack.add(Screen.AppDetails(destination.packageName))
-            is Destination.DevProfile -> backstack.add(Screen.DevProfile(destination.devId))
+            is Destination.AppDetails -> push(Screen.AppDetails(destination.packageName))
+            is Destination.DevProfile -> push(Screen.DevProfile(destination.devId))
             is Destination.AppUpdate -> Unit
-            is Destination.StreamBrowse -> backstack.add(
+            is Destination.StreamBrowse -> push(
                 Screen.StreamBrowse(destination.cluster.forBackStack())
             )
             is Destination.GoogleLogin -> {
                 authProvider().clearSessionRejections()
-                backstack.add(Screen.GoogleLogin(destination.addAccount))
+                push(Screen.GoogleLogin(destination.addAccount))
             }
 
-            Destination.Search -> backstack.add(Screen.Search)
-            Destination.Downloads -> backstack.add(Screen.Downloads)
-            Destination.Notifications -> backstack.add(Screen.Notifications)
-            Destination.Accounts -> backstack.add(Screen.Accounts)
-            Destination.About -> backstack.add(Screen.About)
-            Destination.Favourite -> backstack.add(Screen.Favourite)
-            Destination.Spoof -> backstack.add(Screen.Spoof)
-            Destination.Installed -> backstack.add(Screen.Installed)
-            Destination.Blacklist -> backstack.add(Screen.Blacklist)
-            Destination.Settings -> backstack.add(Screen.Settings)
-            Destination.InstallationPreference -> backstack.add(Screen.InstallationPreference)
-            Destination.LanguagePreference -> backstack.add(Screen.LanguagePreference)
-            Destination.Installer -> backstack.add(Screen.Installer)
-            Destination.NetworkPreference -> backstack.add(Screen.NetworkPreference)
-            Destination.Dispenser -> backstack.add(Screen.Dispenser)
-            Destination.UIPreference -> backstack.add(Screen.UIPreference)
-            Destination.NotificationPreference -> backstack.add(Screen.NotificationPreference)
-            Destination.UpdatesPreference -> backstack.add(Screen.UpdatesPreference)
-            Destination.SourceFilters -> backstack.add(Screen.SourceFilters)
-            Destination.SecurityPreference -> backstack.add(Screen.SecurityPreference)
+            Destination.Search -> push(Screen.Search)
+            Destination.Downloads -> push(Screen.Downloads)
+            Destination.Notifications -> push(Screen.Notifications)
+            Destination.Accounts -> push(Screen.Accounts)
+            Destination.About -> push(Screen.About)
+            Destination.Favourite -> push(Screen.Favourite)
+            Destination.Spoof -> push(Screen.Spoof)
+            Destination.Installed -> push(Screen.Installed)
+            Destination.Blacklist -> push(Screen.Blacklist)
+            Destination.Settings -> push(Screen.Settings)
+            Destination.InstallationPreference -> push(Screen.InstallationPreference)
+            Destination.LanguagePreference -> push(Screen.LanguagePreference)
+            Destination.Installer -> push(Screen.Installer)
+            Destination.NetworkPreference -> push(Screen.NetworkPreference)
+            Destination.Dispenser -> push(Screen.Dispenser)
+            Destination.UIPreference -> push(Screen.UIPreference)
+            Destination.NotificationPreference -> push(Screen.NotificationPreference)
+            Destination.UpdatesPreference -> push(Screen.UpdatesPreference)
+            Destination.SourceFilters -> push(Screen.SourceFilters)
+            Destination.SecurityPreference -> push(Screen.SecurityPreference)
         }
     }
 
