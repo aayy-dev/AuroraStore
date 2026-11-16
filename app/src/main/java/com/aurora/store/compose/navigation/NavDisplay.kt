@@ -65,6 +65,7 @@ import com.aurora.store.compose.ui.preferences.updates.UpdatesPreferenceScreen
 import com.aurora.store.compose.ui.search.SearchScreen
 import com.aurora.store.compose.ui.splash.SplashScreen
 import com.aurora.store.compose.ui.spoof.SpoofScreen
+import com.aurora.store.compose.ui.tv.TvInset
 import com.aurora.store.data.event.AuthEvent
 import com.aurora.store.data.event.InstallerEvent
 import com.aurora.store.data.model.AccountType
@@ -272,9 +273,9 @@ fun NavDisplay(startDestination: NavKey) {
             }
 
             entry<Screen.PermissionRationale> { screen ->
-                PermissionRationaleScreen(
-                    requiredPermissions = screen.requiredPermissions
-                )
+                TvInset {
+                    PermissionRationaleScreen(requiredPermissions = screen.requiredPermissions)
+                }
             }
 
             entry<Screen.StreamBrowse> { screen ->
@@ -301,11 +302,11 @@ fun NavDisplay(startDestination: NavKey) {
             }
 
             entry<Screen.InstallationPreference> {
-                InstallationPreferenceScreen(onNavigateTo = ::navigate)
+                TvInset { InstallationPreferenceScreen(onNavigateTo = ::navigate) }
             }
 
             entry<Screen.LanguagePreference> {
-                LanguagePreferenceScreen(onNavigateTo = ::navigate)
+                TvInset { LanguagePreferenceScreen(onNavigateTo = ::navigate) }
             }
 
             entry<Screen.Search>(
@@ -344,23 +345,29 @@ fun NavDisplay(startDestination: NavKey) {
             }
 
             entry<Screen.Onboarding> { OnboardingScreen() }
-            entry<Screen.Blacklist> { BlacklistScreen() }
-            entry<Screen.Downloads> { DownloadsScreen(onNavigateTo = ::navigate) }
-            entry<Screen.Notifications> { NotificationsScreen(onNavigateTo = ::navigate) }
-            entry<Screen.Accounts> { AccountsScreen(onNavigateTo = ::navigate) }
-            entry<Screen.About> { AboutScreen() }
-            entry<Screen.Favourite> { FavouriteScreen(onNavigateTo = ::navigate) }
-            entry<Screen.Spoof> { SpoofScreen(onNavigateTo = ::navigate) }
-            entry<Screen.Dispenser> { DispenserScreen() }
-            entry<Screen.Installer> { InstallerScreen() }
-            entry<Screen.Installed> { InstalledScreen(onNavigateTo = ::navigate) }
-            entry<Screen.Settings> { SettingsScreen(onNavigateTo = ::navigate) }
-            entry<Screen.NetworkPreference> { NetworkPreferenceScreen(onNavigateTo = ::navigate) }
-            entry<Screen.UIPreference> { UIPreferenceScreen() }
-            entry<Screen.NotificationPreference> { NotificationPreferenceScreen() }
-            entry<Screen.UpdatesPreference> { UpdatesPreferenceScreen(onNavigateTo = ::navigate) }
-            entry<Screen.SourceFilters> { SourceFiltersScreen() }
-            entry<Screen.SecurityPreference> { SecurityPreferenceScreen() }
+            entry<Screen.Blacklist> { TvInset { BlacklistScreen() } }
+            entry<Screen.Downloads> { TvInset { DownloadsScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.Notifications> {
+                TvInset { NotificationsScreen(onNavigateTo = ::navigate) }
+            }
+            entry<Screen.Accounts> { TvInset { AccountsScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.About> { TvInset { AboutScreen() } }
+            entry<Screen.Favourite> { TvInset { FavouriteScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.Spoof> { TvInset { SpoofScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.Dispenser> { TvInset { DispenserScreen() } }
+            entry<Screen.Installer> { TvInset { InstallerScreen() } }
+            entry<Screen.Installed> { TvInset { InstalledScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.Settings> { TvInset { SettingsScreen(onNavigateTo = ::navigate) } }
+            entry<Screen.NetworkPreference> {
+                TvInset { NetworkPreferenceScreen(onNavigateTo = ::navigate) }
+            }
+            entry<Screen.UIPreference> { TvInset { UIPreferenceScreen() } }
+            entry<Screen.NotificationPreference> { TvInset { NotificationPreferenceScreen() } }
+            entry<Screen.UpdatesPreference> {
+                TvInset { UpdatesPreferenceScreen(onNavigateTo = ::navigate) }
+            }
+            entry<Screen.SourceFilters> { TvInset { SourceFiltersScreen() } }
+            entry<Screen.SecurityPreference> { TvInset { SecurityPreferenceScreen() } }
         }
     )
 }
