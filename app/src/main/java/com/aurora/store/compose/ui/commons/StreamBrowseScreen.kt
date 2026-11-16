@@ -29,9 +29,12 @@ import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.Placeholder
 import com.aurora.store.compose.composable.TopAppBar
 import com.aurora.store.compose.composable.app.LargeAppListItem
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvPagedAppGrid
 import com.aurora.store.viewmodel.browse.StreamBrowseViewModel
 import kotlin.random.Random
 import kotlin.uuid.Uuid
@@ -86,6 +89,14 @@ private fun ScreenContent(
                         modifier = Modifier.padding(paddingValues),
                         painter = painterResource(R.drawable.ic_disclaimer),
                         message = stringResource(R.string.no_apps_available)
+                    )
+                } else if (LocalUI.current == UI.TV) {
+                    TvPagedAppGrid(
+                        modifier = Modifier.padding(paddingValues),
+                        apps = apps,
+                        onAppClick = { app ->
+                            onNavigateTo(Destination.AppDetails(app.packageName))
+                        }
                     )
                 } else {
                     LazyColumn(

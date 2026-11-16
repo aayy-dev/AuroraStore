@@ -41,9 +41,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -61,6 +64,8 @@ import com.aurora.store.compose.composable.BlackListItem
 import com.aurora.store.compose.composable.ContainedLoadingIndicator
 import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.TextDividerComposable
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.blacklist.menu.BlacklistMenu
 import com.aurora.store.compose.ui.blacklist.menu.MenuItem
@@ -121,6 +126,7 @@ private fun ScreenContent(
     val textFieldState = rememberTextFieldState()
     val searchBarState = rememberSearchBarState()
     val coroutineScope = rememberCoroutineScope()
+    val isTv = LocalUI.current == UI.TV
     var sheetVisible by remember { mutableStateOf(false) }
 
     val docImportLauncher = rememberLauncherForActivityResult(
@@ -232,6 +238,16 @@ private fun ScreenContent(
                 }
             },
             actions = {
+                if (isTv) {
+                    IconButton(
+                        onClick = { coroutineScope.launch { searchBarState.animateToExpanded() } }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_round_search),
+                            contentDescription = stringResource(R.string.action_search)
+                        )
+                    }
+                }
                 IconButton(onClick = { sheetVisible = true }) {
                     Icon(
                         painter = painterResource(R.drawable.ic_tune),
@@ -265,6 +281,8 @@ private fun ScreenContent(
         }
     }
 
+    var refocusPackage by remember { mutableStateOf<String?>(null) }
+
     Scaffold(
         topBar = { SearchBar() }
     ) { paddingValues ->
@@ -281,10 +299,38 @@ private fun ScreenContent(
                     isPackageBlacklisted(pkg.packageName) || pkg.isFiltered
                 }
 
+                // Toggling a row moves it to the other section, so on TV focus follows it there
+                LaunchedEffect(refocusPackage, selectedPackages, otherPackages) {
+                    val target = refocusPackage ?: return@LaunchedEffect
+                    val rows = buildList {
+                        if (selectedPackages.isNotEmpty()) add(null)
+                        addAll(selectedPackages)
+                        if (otherPackages.isNotEmpty()) add(null)
+                        addAll(otherPackages)
+                    }
+                    val index = rows.indexOfFirst { it?.packageName == target }
+                    val visible = listState.layoutInfo.visibleItemsInfo.any { it.index == index }
+                    if (index >= 0 && !visible) listState.scrollToItem(index)
+                }
+
                 @Composable
                 fun BlacklistRow(pkg: BlacklistAppItem) {
                     val isBlacklisted = isPackageBlacklisted(pkg.packageName)
+                    val rowFocus = remember { FocusRequester() }
+                    if (refocusPackage == pkg.packageName) {
+                        LaunchedEffect(isBlacklisted) {
+                            repeat(10) {
+                                withFrameNanos { }
+                                if (runCatching { rowFocus.requestFocus() }.getOrDefault(false)) {
+                                    refocusPackage = null
+                                    return@LaunchedEffect
+                                }
+                            }
+                            refocusPackage = null
+                        }
+                    }
                     BlackListItem(
+                        modifier = Modifier.focusRequester(rowFocus),
                         icon = pkg.icon,
                         displayName = pkg.displayName,
                         packageName = pkg.packageName,
@@ -293,6 +339,7 @@ private fun ScreenContent(
                         isChecked = isBlacklisted || pkg.isFiltered,
                         isEnabled = !pkg.isFiltered,
                         onClick = {
+                            if (isTv) refocusPackage = pkg.packageName
                             if (isBlacklisted) {
                                 onWhitelist(pkg.packageName)
                             } else {

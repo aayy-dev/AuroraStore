@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -203,7 +202,6 @@ private fun MenuGroup(items: List<MoreItem>, onDismiss: () -> Unit) {
 
 @Composable
 private fun AccountHeader(viewModel: MoreViewModel, onNavigateToAccounts: () -> Unit) {
-    val context = LocalContext.current
     val isAnonymous = viewModel.authProvider.isAnonymous
 
     Row(

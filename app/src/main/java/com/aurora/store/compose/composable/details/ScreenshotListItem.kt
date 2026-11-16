@@ -7,6 +7,7 @@ package com.aurora.store.compose.composable.details
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -45,7 +46,9 @@ fun ScreenshotListItem(modifier: Modifier = Modifier, url: String) {
     val state by painter.state.collectAsStateWithLifecycle()
     val aspectRatioModifier = state.painter?.intrinsicSize?.let { intrinsicSize ->
         val ratio = intrinsicSize.width / intrinsicSize.height
-        if (ratio.isNaN()) null else Modifier.aspectRatio(ratio = ratio)
+        // wrapContentSize first, so a size forced from outside (a full screen pager page) can't
+        // stretch the image past its ratio and crop it; it's centered there instead
+        if (ratio.isNaN()) null else Modifier.wrapContentSize().aspectRatio(ratio = ratio)
     }
 
     Image(

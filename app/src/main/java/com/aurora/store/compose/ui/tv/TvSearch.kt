@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -107,7 +106,7 @@ fun TvSearch(
         )
 
         if (suggestions.isNotEmpty()) {
-            TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
+            TvPivot(leading = TvDimens.ScreenPaddingHorizontal, horizontal = true) {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,7 +117,7 @@ fun TvSearch(
                     ),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(suggestions, key = { it.title }) { suggestion ->
+                    items(suggestions.distinctBy { it.title }, key = { it.title }) { suggestion ->
                         TvChip(
                             label = suggestion.title,
                             selected = false,
@@ -217,41 +216,59 @@ private fun TvSearchResults(results: LazyPagingItems<App>, onAppClick: (App) -> 
             message = stringResource(R.string.no_apps_available)
         )
 
-        else -> TvPivot(leading = ResultsPivot) {
-            var focusedIndex by rememberSaveable { mutableIntStateOf(0) }
-            val restoreRequester = remember { FocusRequester() }
-            RequestFocusOnce(restoreRequester)
+        else -> TvPagedAppGrid(apps = results, onAppClick = onAppClick)
+    }
+}
 
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .focusRestorer(),
-                columns = GridCells.Fixed(TvDimens.GRID_COLUMNS),
-                contentPadding = PaddingValues(
-                    start = TvDimens.ScreenPaddingHorizontal,
-                    end = TvDimens.ScreenPaddingHorizontal,
-                    top = 16.dp,
-                    bottom = 48.dp
-                ),
-                horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(count = results.itemCount) { index ->
-                    results[index]?.let { app ->
-                        TvAppCard(
-                            modifier = Modifier
-                                .then(
-                                    if (index == focusedIndex) {
-                                        Modifier.focusRequester(restoreRequester)
-                                    } else {
-                                        Modifier
-                                    }
-                                )
-                                .onFocusChanged { if (it.hasFocus) focusedIndex = index },
-                            app = app,
-                            onClick = { onAppClick(app) }
-                        )
-                    }
+/**
+ * Grid of [TvAppCard]s for a paged list of apps (search results, "more" pages), restoring focus
+ * to the last focused card when it comes back.
+ */
+@Composable
+fun TvPagedAppGrid(
+    apps: LazyPagingItems<App>,
+    onAppClick: (App) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val focusMemory = rememberSaveable(
+        saver = androidx.compose.runtime.saveable.Saver(
+            save = { it.toList() },
+            restore = { it.toIntArray() }
+        )
+    ) { IntArray(1) }
+    val restoreRequester = remember { FocusRequester() }
+    RequestFocusOnce(restoreRequester)
+
+    TvPivot(leading = ResultsPivot) {
+        LazyVerticalGrid(
+            modifier = modifier
+                .fillMaxSize()
+                .focusRestorer(),
+            columns = GridCells.Fixed(TvDimens.GRID_COLUMNS),
+            contentPadding = PaddingValues(
+                start = TvDimens.ScreenPaddingHorizontal,
+                end = TvDimens.ScreenPaddingHorizontal,
+                top = 16.dp,
+                bottom = 48.dp
+            ),
+            horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(count = apps.itemCount) { index ->
+                apps[index]?.let { app ->
+                    TvAppCard(
+                        modifier = Modifier
+                            .then(
+                                if (index == focusMemory[0]) {
+                                    Modifier.focusRequester(restoreRequester)
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .onFocusChanged { if (it.hasFocus) focusMemory[0] = index },
+                        app = app,
+                        onClick = { onAppClick(app) }
+                    )
                 }
             }
         }

@@ -140,6 +140,7 @@
     <string name="details_no_favourites">"No favourite apps found"</string>
     <string name="details_no_dependencies">"No dependencies"</string>
     <string name="details_no_permission">"No permissions"</string>
+    <string name="details_no_reviews">"No reviews yet"</string>
     <string name="details_no_updates">"No updates available"</string>
     <string name="details_paid">"Paid"</string>
     <string name="details_permission">"Permission"</string>
@@ -656,6 +657,9 @@
     <string name="permissions_requested"><xliff:g id="number_of_permissions">%1$d</xliff:g> permissions</string>
     <string name="details_more_info">More info</string>
     <string name="details_screenshots">Screenshots</string>
+    <!-- Spoken state of a toggle such as the favourite button -->
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
     <string name="details_more_files">Files</string>
     <string name="details_more_target_api">Targets</string>
     <string name="details_more_package_name">Package name</string>

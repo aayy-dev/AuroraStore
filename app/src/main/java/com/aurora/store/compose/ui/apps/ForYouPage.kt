@@ -55,6 +55,7 @@ internal fun TvForYouContent(
     pageType: Int,
     viewModel: StreamViewModel,
     onAppClick: (App) -> Unit,
+    onMoreClick: (StreamCluster) -> Unit,
     onClusterScrolled: (StreamCluster) -> Unit,
     onScrolledToEnd: () -> Unit
 ) {
@@ -71,6 +72,7 @@ internal fun TvForYouContent(
         modifier = Modifier.fillMaxSize(),
         streamBundle = streamBundle?.get(category),
         onAppClick = onAppClick,
+        onMoreClick = onMoreClick,
         onClusterScrolled = onClusterScrolled,
         onScrolledToEnd = onScrolledToEnd
     )

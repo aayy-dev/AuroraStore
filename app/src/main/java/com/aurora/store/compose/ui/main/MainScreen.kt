@@ -40,6 +40,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -398,7 +399,7 @@ fun MainScreen(
                                             Icon(painter = icon, contentDescription = null)
                                         }
                                     },
-                                    label = { Text(stringResource(tab.labelRes)) }
+                                    label = { NavLabel(stringResource(tab.labelRes)) }
                                 )
                             }
 
@@ -411,7 +412,7 @@ fun MainScreen(
                                         contentDescription = null
                                     )
                                 },
-                                label = { Text(stringResource(R.string.action_search)) }
+                                label = { NavLabel(stringResource(R.string.action_search)) }
                             )
                         }
                     }
@@ -522,4 +523,10 @@ private fun HomeTopBar(
             }
         }
     )
+}
+
+/** Bottom bar label: one line, so large font sizes don't wrap it under the icon. */
+@Composable
+private fun NavLabel(text: String) {
+    Text(text = text, maxLines = 1, overflow = TextOverflow.Ellipsis)
 }

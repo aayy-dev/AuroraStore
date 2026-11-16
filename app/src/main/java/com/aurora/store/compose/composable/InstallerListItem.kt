@@ -12,6 +12,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.data.installer.SessionInstaller
 import com.aurora.store.data.model.InstallerInfo
@@ -34,7 +36,13 @@ fun InstallerListItem(
             ?.let { stringResource(R.string.installer_provider, description, it) }
             ?: description,
         onClick = onClick,
-        trailing = { RadioButton(selected = isSelected, onClick = onClick) }
+        trailing = {
+            RadioButton(
+                selected = isSelected,
+                // On TV the row itself is the only focus stop for this action
+                onClick = if (LocalUI.current == UI.TV) null else onClick
+            )
+        }
     )
 }
 

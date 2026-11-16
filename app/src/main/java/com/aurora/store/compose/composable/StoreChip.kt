@@ -63,7 +63,6 @@ fun StoreChip(
     selected: Boolean = false,
     onClick: () -> Unit = {},
     @DrawableRes iconRes: Int? = null,
-    @DrawableRes trailingIconRes: Int? = null,
     showCheckWhenSelected: Boolean = false,
     style: StoreChipStyle = StoreChipStyle.TONAL
 ) {
@@ -97,7 +96,7 @@ fun StoreChip(
         Row(
             modifier = Modifier.padding(
                 start = if (leadingIcon != null) 12.dp else 16.dp,
-                end = if (trailingIconRes != null) 8.dp else 16.dp
+                end = 16.dp
             ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -117,13 +116,6 @@ fun StoreChip(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            if (trailingIconRes != null) {
-                Icon(
-                    modifier = Modifier.size(18.dp),
-                    painter = painterResource(trailingIconRes),
-                    contentDescription = null
-                )
-            }
         }
     }
 }

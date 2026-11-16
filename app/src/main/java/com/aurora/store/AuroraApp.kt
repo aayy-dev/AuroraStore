@@ -71,7 +71,12 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
         ComposeMaterial3Flags.isCheckboxStylingFixEnabled = true
         super.onCreate()
         // Set the app theme
-        val themeStyle = Preferences.getInteger(this, Preferences.PREFERENCE_THEME_STYLE)
+        // TV is dark only (like the TV Play Store), whatever the preference says
+        val themeStyle = if (PackageUtil.isTv(this)) {
+            2
+        } else {
+            Preferences.getInteger(this, Preferences.PREFERENCE_THEME_STYLE)
+        }
         setAppTheme(themeStyle)
 
         // Create Notification Channels

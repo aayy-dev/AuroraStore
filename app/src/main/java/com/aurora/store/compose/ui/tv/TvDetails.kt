@@ -117,7 +117,12 @@ fun TvDetailsHeader(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StarRating(rating = app.rating.average, starSize = 16.dp)
+                    StarRating(
+                        rating = app.rating.average,
+                        starSize = 16.dp,
+                        color = TvOnSurface,
+                        emptyColor = TvOnSurface.copy(alpha = 0.3f)
+                    )
                     Text(
                         text = app.labeledRating,
                         style = MaterialTheme.typography.bodyLarge,
@@ -182,7 +187,7 @@ fun TvScreenshotsRow(
     if (screenshots.isEmpty()) return
     Column(modifier = modifier) {
         TvSectionTitle(title = title)
-        TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
+        TvPivot(leading = TvDimens.ScreenPaddingHorizontal, horizontal = true) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -244,7 +249,7 @@ fun TvRatingsRow(
 
     Column(modifier = modifier) {
         TvSectionTitle(title = title)
-        TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
+        TvPivot(leading = TvDimens.ScreenPaddingHorizontal, horizontal = true) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -408,7 +413,7 @@ fun TvInfoRow(title: String, items: List<TvInfo>, modifier: Modifier = Modifier)
     if (items.isEmpty()) return
     Column(modifier = modifier) {
         TvSectionTitle(title = title)
-        TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
+        TvPivot(leading = TvDimens.ScreenPaddingHorizontal, horizontal = true) {
             LazyRow(
                 modifier = Modifier
                     .fillMaxWidth()

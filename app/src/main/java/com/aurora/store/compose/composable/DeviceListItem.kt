@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 
 @Composable
 fun DeviceListItem(
@@ -29,7 +31,15 @@ fun DeviceListItem(
         tertiary = platforms.replace(",\\s*".toRegex(), ", "),
         onClick = { if (!isChecked) onClick() },
         trailing = {
-            Checkbox(checked = isChecked, onCheckedChange = { if (!isChecked) onClick() })
+            Checkbox(
+                checked = isChecked,
+                // On TV the row itself is the only focus stop for this action
+                onCheckedChange = if (LocalUI.current == UI.TV) {
+                    null
+                } else {
+                    { _ -> if (!isChecked) onClick() }
+                }
+            )
         }
     )
 }
