@@ -558,8 +558,6 @@
     <string name="pref_notification_disabled_desc">Ketuk untuk mengaktifkan notifikasi Aurora Store</string>
     <string name="updates_self_header">Pembaruan mandiri</string>
     <string name="updates_self_desc">Build Aurora Store yang lebih baru tersedia</string>
-    <string name="pref_ui_dynamic_color">Warna dinamis</string>
-    <string name="pref_ui_dynamic_color_desc">Gunakan warna dari wallpaper Anda. Nonaktifkan untuk memakai palet merek Aurora.</string>
     <string name="toast_fav_install_enqueued">Menginstal %1$d aplikasi</string>
     <string name="toast_fav_install_none">Tidak ada yang perlu diinstal</string>
     <string name="toast_fav_install_failed">Gagal mengambil detail aplikasi</string>

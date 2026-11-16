@@ -567,8 +567,6 @@
     <string name="pref_theme_style_system">ຕາມລະບົບ</string>
     <string name="pref_theme_style_light">ສະຫວ່າງ</string>
     <string name="pref_theme_style_dark">ມືດ</string>
-    <string name="pref_ui_dynamic_color">ສີແບບໄດນາມິກ</string>
-    <string name="pref_ui_dynamic_color_desc">ໃຊ້ສີຈາກພາບພື້ນຫຼັງຂອງທ່ານ. ປິດເພື່ອໃຊ້ໂທນສີຂອງ Aurora.</string>
     <string name="microg_removed_auth_warning">microG ບໍ່ໄດ້ຕິດຕັ້ງອີກຕໍ່ໄປ. ກະລຸນາຕັ້ງຄ່າໃໝ່ອີກຄັ້ງເພື່ອໃຫ້ການເຮັດວຽກເປັນໄປຢ່າງລຽບງ່າຍ.</string>
     <string name="manual_download_lookup">ຄົ້ນຫາເວີຊັນ</string>
     <string name="manual_download_select_version">ເລືອກເວີຊັນ</string>

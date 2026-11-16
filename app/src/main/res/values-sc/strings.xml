@@ -420,8 +420,6 @@
     <string name="pref_theme_style_system">Sighi su sistema</string>
     <string name="pref_theme_style_light">Craru</string>
     <string name="pref_theme_style_dark">Iscuru</string>
-    <string name="pref_ui_dynamic_color">Colores dinàmicos</string>
-    <string name="pref_ui_dynamic_color_desc">Imprea sos colores de s\'isfundu de s\'ischermu. Istuda·lu pro sos colores de Aurora.</string>
     <string name="pref_ui_layout">Dispositzione</string>
     <string name="pref_ui_layout_tab">Ischerta s\'ischeda predefinida</string>
     <string name="app_links_title">Ligàmenes de sas aplicatziones</string>

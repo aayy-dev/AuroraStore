@@ -540,8 +540,6 @@
     <string name="pref_updates_check_frequency_7d">Ogni 7 giorni</string>
     <string name="pref_updates_check_frequency_15d">Ogni 15 giorni</string>
     <string name="pref_ui_theme">Tema</string>
-    <string name="pref_ui_dynamic_color">Colori dinamici</string>
-    <string name="pref_ui_dynamic_color_desc">Usa i colori dal tuo sfondo. Spegni per usare la palette predefinita di Aurora.</string>
     <string name="microg_removed_auth_warning">microG non è più installato. Esegui di nuovo l\'installazione per mantenere le cose funzionanti senza intoppi.</string>
     <string name="manual_download_lookup">Cerca versioni</string>
     <string name="manual_download_select_version">Seleziona una versione</string>

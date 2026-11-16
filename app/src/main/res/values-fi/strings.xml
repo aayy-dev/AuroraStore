@@ -561,8 +561,6 @@
     <string name="pref_theme_style_system">Seuraa järjestelmää</string>
     <string name="pref_theme_style_light">Vaalea</string>
     <string name="pref_theme_style_dark">Tumma</string>
-    <string name="pref_ui_dynamic_color">Dynaamiset värit</string>
-    <string name="pref_ui_dynamic_color_desc">Käytä värejä omasta taustakuvastasi. Poistaa käytöstä Auroran oman teemavärityksen.</string>
     <string name="microg_removed_auth_warning">microG ei ole enää asennettu. Tee asennusprosessi uudestaan, jotta asiat jatkavat toimimista kunnolla.</string>
     <string name="toast_fav_install_enqueued">Asennetaan %1$d sovellusta</string>
     <string name="toast_fav_install_none">Ei mitään asennettavaa</string>

@@ -415,8 +415,6 @@
     <string name="pref_theme_style_system">Follow na sistema</string>
     <string name="pref_theme_style_light">Maputi</string>
     <string name="pref_theme_style_dark">Madilim</string>
-    <string name="pref_ui_dynamic_color">Dinamiko na mga kulay</string>
-    <string name="pref_ui_dynamic_color_desc">Gumamit ng mga kulay na galing sa iyong wallpaper. Patayin para sa brand palette ng Aurora.</string>
     <string name="pref_ui_layout">Pag-layout</string>
     <string name="pref_ui_layout_tab">I-select ang default tab</string>
     <string name="app_links_title">Mga link ng app</string>

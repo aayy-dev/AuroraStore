@@ -569,8 +569,6 @@
     <string name="title_install_favourites">Kas paigaldad lemmikud?</string>
     <string name="install_favourites_summary">Järgnevaga laadid alla ja paigaldad %1$d rakendust.</string>
     <string name="install_favourites_warning">Iga rakenduse puhul võidakse ka paigaldusluba eraldi üle küsida.</string>
-    <string name="pref_ui_dynamic_color">Dünaamilised värvid</string>
-    <string name="pref_ui_dynamic_color_desc">Saad kasutada oma nutiseadme taustapildi värve. Kui soovid kindlasti kasutada Aurora värvikombinatsiooni, siis lülita see valik välja.</string>
     <string name="toast_fav_install_enqueued">%1$d rakendust on paigaldamisel</string>
     <string name="toast_fav_install_none">Pole mitte midagi paigaldada</string>
     <plurals name="favourites_count">

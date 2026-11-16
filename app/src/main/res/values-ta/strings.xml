@@ -524,8 +524,6 @@
     <string name="pref_theme_style_system">முறையைப் பின்பற்றவும்</string>
     <string name="pref_theme_style_light">ஒளி</string>
     <string name="pref_theme_style_dark">இருள்</string>
-    <string name="pref_ui_dynamic_color">மாறும் நிறங்கள்</string>
-    <string name="pref_ui_dynamic_color_desc">உங்கள் வால்பேப்பரிலிருந்து வண்ணங்களைப் பயன்படுத்தவும். அரோராவின் சூட்டுக்குறி தட்டுக்கு அணைக்கவும்.</string>
     <string name="app_info_downloads">பதிவிறக்கங்கள்</string>
     <string name="app_info_updated_on">கடைசியாக புதுப்பிக்கப்பட்டது</string>
     <string name="app_info_min_android">குறைந்தபட்ச ஆண்ட்ராய்டு பதிப்பு</string>

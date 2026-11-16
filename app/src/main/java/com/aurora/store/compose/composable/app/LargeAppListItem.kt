@@ -63,7 +63,7 @@ fun LargeAppListItem(
     ) {
         if (rank != null) {
             Text(
-                modifier = Modifier.widthIn(min = 20.dp),
+                modifier = Modifier.widthIn(min = 28.dp),
                 text = rank.toString(),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

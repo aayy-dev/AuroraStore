@@ -22,8 +22,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ContainedLoadingIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -228,7 +228,7 @@ private fun ScreenContent(
                     dimensionResource(R.dimen.spacing_medium)
                 )
             ) {
-                FilledTonalButton(
+                OutlinedButton(
                     modifier = Modifier.weight(1F),
                     onClick = { activity?.onBackPressedDispatcher?.onBackPressed() }
                 ) {

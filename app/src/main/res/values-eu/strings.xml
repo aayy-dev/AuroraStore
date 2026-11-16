@@ -603,8 +603,6 @@
     <string name="title_install_favourites">Gogokoak instalatu?</string>
     <string name="install_favourites_summary">Honek %1$d aplikazio deskargatu eta instalatuko ditu.</string>
     <string name="install_favourites_warning">Baliteke aplikazio bakoitzerako instalazio-eskaera bat ikustea.</string>
-    <string name="pref_ui_dynamic_color">Kolore dinamikoak</string>
-    <string name="pref_ui_dynamic_color_desc">Erabili horma-paperaren koloreak. Desaktibatu Auroraren marka-paleta erabiltzeko.</string>
     <string name="manual_download_lookup">Bilatu bertsioak</string>
     <string name="manual_download_select_version">Hautatu bertsio bat</string>
     <string name="manual_download_no_versions">Ez da bertsio ezagunik aurkitu</string>

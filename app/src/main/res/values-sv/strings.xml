@@ -592,8 +592,6 @@
     <string name="details_review_delete_message">Ditt betyg och din recension tas bort från Google Play.</string>
     <string name="confirm_deeplink_summary">Fråga innan en applistning öppnas från en länk, så att annonser inte kan starta Aurora Store utan ditt samtycke.</string>
     <string name="install_favourites_warning">Du kan få en separat installationsfråga för varje app.</string>
-    <string name="pref_ui_dynamic_color">Dynamiska färger</string>
-    <string name="pref_ui_dynamic_color_desc">Använd färger från bakgrundsbilden. Stäng av alternativet för Auroras varumärkesfärgpalett.</string>
     <string name="toast_fav_install_enqueued">Installerar %1$d appar</string>
     <string name="toast_fav_install_none">Inget att installera</string>
     <string name="toast_fav_install_failed">Kunde inte hämta appdetaljer</string>

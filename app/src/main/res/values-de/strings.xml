@@ -568,8 +568,6 @@
     <string name="title_install_favourites">Favoriten installieren?</string>
     <string name="install_favourites_summary">Dadurch werden %1$d Apps heruntergeladen und installiert.</string>
     <string name="install_favourites_warning">Möglicherweise wird für jede App eine eigene Installationsaufforderung angezeigt.</string>
-    <string name="pref_ui_dynamic_color">Dynamische Farben</string>
-    <string name="pref_ui_dynamic_color_desc">Farben aus deinem Hintergrundbild verwenden. Deaktiviert Auroras Farbpalette.</string>
     <string name="toast_fav_install_enqueued">%1$d Apps werden installiert</string>
     <string name="toast_fav_install_none">Keine Installation erforderlich</string>
     <string name="toast_fav_install_failed">App-Details konnten nicht abgerufen werden</string>

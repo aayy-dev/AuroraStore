@@ -572,8 +572,6 @@
     <string name="title_install_favourites">Установить избранное?</string>
     <string name="install_favourites_summary">При этом будет загружено и установлено %1$d приложений.</string>
     <string name="install_favourites_warning">Для каждого приложения может появиться отдельное окно с запросом на установку.</string>
-    <string name="pref_ui_dynamic_color">Динамические цвета</string>
-    <string name="pref_ui_dynamic_color_desc">Использовать цвета обоев. Отключите для фирменной палитры Авроры.</string>
     <string name="toast_fav_install_enqueued">Установка %1$d приложений(я)</string>
     <string name="toast_fav_install_none">Устанавливать нечего</string>
     <string name="toast_fav_install_failed">Не удалось получить сведения о приложении</string>

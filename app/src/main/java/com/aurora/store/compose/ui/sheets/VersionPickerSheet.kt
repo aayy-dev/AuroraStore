@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -99,7 +98,7 @@ fun VersionPickerSheet(
                         .fillMaxWidth()
                         .heightIn(max = 480.dp)
                         .padding(horizontal = dimensionResource(R.dimen.spacing_small))
-                        .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                        .clip(MaterialTheme.shapes.large)
                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 ) {
                     itemsIndexed(
@@ -121,7 +120,7 @@ fun VersionPickerSheet(
 private fun AvailabilityWarning(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(dimensionResource(R.dimen.radius_medium)),
+        shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.secondaryContainer,
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
     ) {

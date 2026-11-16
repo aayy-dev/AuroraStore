@@ -565,8 +565,6 @@
     <string name="details_your_review">Twoja recenzja</string>
     <string name="details_review_delete_message">Twoja ocena i recenzja zostaną usunięte z Google Play.</string>
     <string name="title_install_favourites">Zainstalować ulubione?</string>
-    <string name="pref_ui_dynamic_color">Dynamiczne kolory</string>
-    <string name="pref_ui_dynamic_color_desc">Użyj kolorów z tapety. Wyłącz, aby przywrócić domyślną paletę kolorów Aurora Store.</string>
     <string name="toast_fav_install_none">Brak elementów do zainstalowania</string>
     <string name="toast_fav_install_failed">Nie udało się pobrać szczegółów aplikacji</string>
     <plurals name="favourites_count">

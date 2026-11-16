@@ -23,6 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.dp
@@ -38,8 +41,12 @@ import com.aurora.store.compose.theme.ratingBarTrackColor
  */
 @Composable
 fun RatingListItem(modifier: Modifier = Modifier, label: String, rating: Float) {
+    val share = rating.coerceIn(0f, 1f)
     Row(
         modifier = modifier
+            .semantics(mergeDescendants = true) {
+                progressBarRangeInfo = ProgressBarRangeInfo(share, 0f..1f)
+            }
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.spacing_small)),
         verticalAlignment = Alignment.CenterVertically,
@@ -58,13 +65,15 @@ fun RatingListItem(modifier: Modifier = Modifier, label: String, rating: Float) 
                 .clip(CircleShape)
                 .background(ratingBarTrackColor)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(rating.coerceIn(0f, 1f).coerceAtLeast(0.03f))
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-            )
+            if (share > 0f) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(share)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primary)
+                )
+            }
         }
     }
 }

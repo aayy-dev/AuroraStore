@@ -547,8 +547,6 @@
     <string name="pref_updates_check_frequency_7d">Ik pēc 7 dienām</string>
     <string name="pref_updates_check_frequency_15d">Ik pēc 15 dienām</string>
     <string name="pref_updates_check_frequency_24h">Ik pēc 24 stundām</string>
-    <string name="pref_ui_dynamic_color">Pielāgojošas krāsas</string>
-    <string name="pref_ui_dynamic_color_desc">Izmantot krāsas no ekrāntapetes. Izslēgt, lai izmantotu Aurora zīmola paleti.</string>
     <string name="source_filters_installers_empty">Vēl nav pievienots neviens uzstādītājs</string>
     <string name="account_switching">Maina kontu…</string>
     <string name="manual_download_lookup">Skatīt pieejamās lejupielādējamās versijas</string>

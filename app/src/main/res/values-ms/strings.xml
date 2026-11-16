@@ -566,8 +566,6 @@
     <string name="title_install_favourites">Pasang apl kegemaran?</string>
     <string name="install_favourites_summary">Ini akan memuat turun dan memasang apl %1$d.</string>
     <string name="install_favourites_warning">Anda mungkin melihat gesaan pemasangan berasingan untuk setiap aplikasi.</string>
-    <string name="pref_ui_dynamic_color">Warna dinamik</string>
-    <string name="pref_ui_dynamic_color_desc">Gunakan warna daripada kertas dinding anda. Matikan palet jenama Aurora.</string>
     <string name="toast_fav_install_enqueued">Memasang apl %1$d</string>
     <string name="toast_fav_install_none">Tiada apa-apa untuk dipasang</string>
     <string name="toast_fav_install_failed">Gagal mengambil butiran aplikasi</string>

@@ -584,8 +584,6 @@
     <string name="title_install_favourites">Të instalohet të parapëlqyerit?</string>
     <string name="install_favourites_summary">Kjo do të shkarkojë dhe instalojë %1$d aplikacione.</string>
     <string name="install_favourites_warning">Mund të shihni një hap më vete fillimi instalimi për secilin aplikacion.</string>
-    <string name="pref_ui_dynamic_color">Ngjyra dinamike</string>
-    <string name="pref_ui_dynamic_color_desc">Përdorni ngjyra nga sfondi juaj. Për paletë marke Aurora, çaktivizojeni.</string>
     <string name="toast_fav_install_enqueued">Po instalohen %1$d aplikacione</string>
     <string name="toast_fav_install_none">S’ka gjë për instalim</string>
     <string name="toast_fav_install_failed">S’u arrit të sillen hollësi aplikacioni</string>

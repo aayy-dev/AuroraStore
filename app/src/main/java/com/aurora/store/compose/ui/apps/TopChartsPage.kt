@@ -5,18 +5,16 @@
 
 package com.aurora.store.compose.ui.apps
 
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -102,17 +100,22 @@ private fun TopChartsBody(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(
-                    horizontal = dimensionResource(R.dimen.spacing_medium),
-                    vertical = dimensionResource(R.dimen.spacing_small)
-                ),
+        val chipListState = rememberLazyListState()
+        LaunchedEffect(selectedIndex) {
+            if (selectedIndex in chartTitles.indices) {
+                chipListState.animateScrollToItem(selectedIndex)
+            }
+        }
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            state = chipListState,
+            contentPadding = PaddingValues(
+                horizontal = dimensionResource(R.dimen.spacing_medium),
+                vertical = dimensionResource(R.dimen.spacing_small)
+            ),
             horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
         ) {
-            chartTitles.forEachIndexed { index, titleRes ->
+            itemsIndexed(chartTitles) { index, titleRes ->
                 StoreChip(
                     label = stringResource(titleRes),
                     selected = selectedIndex == index,

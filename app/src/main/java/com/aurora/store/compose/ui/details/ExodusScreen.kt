@@ -135,7 +135,7 @@ private fun ScreenContentReport(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onRequestAnalysis) {
+            FloatingActionButton(onClick = onRequestAnalysis, shape = MaterialTheme.shapes.medium) {
                 Icon(
                     painter = painterResource(R.drawable.ic_scan),
                     contentDescription = stringResource(R.string.action_request_analysis)

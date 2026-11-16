@@ -570,8 +570,6 @@
     <string name="title_install_favourites">Instalezi favorite?</string>
     <string name="install_favourites_summary">Aceasta va descărca și instala %1$d aplicații.</string>
     <string name="install_favourites_warning">Este posibil să vezi o solicitare de instalare separat pentru fiecare aplicație.</string>
-    <string name="pref_ui_dynamic_color">Culori dinamice</string>
-    <string name="pref_ui_dynamic_color_desc">Utilizează culorile din imaginea de fundal. Dezactivează paleta de culori Aurora.</string>
     <string name="toast_fav_install_enqueued">Se instalează %1$d aplicații</string>
     <string name="toast_fav_install_none">Nimic de instalat</string>
     <string name="toast_fav_install_failed">Nu s-au putut prelua detaliile aplicației</string>

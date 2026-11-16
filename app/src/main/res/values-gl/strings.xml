@@ -552,8 +552,6 @@
     <string name="pref_theme_style_system">Segundo o sistema</string>
     <string name="pref_theme_style_light">Claro</string>
     <string name="pref_theme_style_dark">Escuro</string>
-    <string name="pref_ui_dynamic_color">Cores dinámicas</string>
-    <string name="pref_ui_dynamic_color_desc">Emprega cores do teu fondo da pantalla. Desactívao para usar a paleta de Aurora.</string>
     <string name="action_skip">Omitir</string>
     <string name="microg_removed_auth_warning">microG xa non está instalado. Executa a configuración de novo para garantir un funcionamento correcto.</string>
     <string name="microg_installer_subtitle">Require a instalación da aplicación complementaria microG</string>

@@ -508,7 +508,6 @@
     <string name="pref_theme_style_dark">ダーク</string>
     <string name="pref_theme_style_system">システムに合わせる</string>
     <string name="pref_ui_theme">テーマ</string>
-    <string name="pref_ui_dynamic_color">ダイナミックカラー</string>
     <string name="manual_download_select_version">バージョンを選択してください</string>
     <string name="toast_fav_install_enqueued">%1$dつのアプリをインストールしています</string>
     <string name="status_installing">インストール中</string>

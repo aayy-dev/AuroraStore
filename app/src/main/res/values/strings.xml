@@ -470,8 +470,6 @@
     <string name="pref_theme_style_system">Follow system</string>
     <string name="pref_theme_style_light">Light</string>
     <string name="pref_theme_style_dark">Dark</string>
-    <string name="pref_ui_dynamic_color">Dynamic colors</string>
-    <string name="pref_ui_dynamic_color_desc">Use colors from your wallpaper. Turn off for Aurora\'s brand palette.</string>
     <string name="pref_ui_layout">Layout</string>
     <string name="pref_ui_layout_tab">Select default tab</string>
     <string name="app_links_title">App links</string>
@@ -756,5 +754,10 @@
     <!-- Network Dialog -->
     <string name="action_check">"Check"</string>
     <!-- Label under the rating in the app details stats row, e.g. "12K reviews" -->
-    <string name="details_stat_reviews">%1$s reviews</string>
+    <plurals name="details_stat_reviews">
+        <item quantity="one">%1$s review</item>
+        <item quantity="other">%1$s reviews</item>
+    </plurals>
+    <!-- Spoken description of a star rating, e.g. "Rated 4.3 out of 5 stars" -->
+    <string name="rating_content_description">Rated %1$s out of 5 stars</string>
 </resources>

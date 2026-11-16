@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -63,7 +63,7 @@ fun Placeholder(
             textAlign = TextAlign.Center
         )
         if (actionLabel != null && onAction != null) {
-            FilledTonalButton(onClick = onAction) {
+            Button(onClick = onAction) {
                 Text(
                     text = actionLabel,
                     maxLines = 1,
