@@ -38,8 +38,11 @@ import com.aurora.store.compose.composable.ShimmerAppRow
 import com.aurora.store.compose.composable.StoreChip
 import com.aurora.store.compose.composable.StoreChipStyle
 import com.aurora.store.compose.composable.app.LargeAppListItem
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvTopCharts
 import com.aurora.store.data.model.ViewState
 import com.aurora.store.data.model.ViewState.Loading.getDataAs
 import com.aurora.store.viewmodel.topchart.TopChartViewModel
@@ -72,6 +75,19 @@ internal fun TopChartsContent(
     LaunchedEffect(selectedIndex) {
         listState.scrollToItem(0)
         viewModel.getStreamCluster(chartType, selectedChart)
+    }
+
+    if (LocalUI.current == UI.TV) {
+        TvTopCharts(
+            selectedIndex = selectedIndex,
+            chartTitles = chartTitles,
+            state = state,
+            cluster = cluster,
+            onTabSelected = { selectedIndex = it },
+            onRetry = { viewModel.getStreamCluster(chartType, selectedChart) },
+            onAppClick = onAppClick
+        )
+        return
     }
 
     TopChartsBody(

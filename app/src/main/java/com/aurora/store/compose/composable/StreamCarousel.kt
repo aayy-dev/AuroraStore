@@ -32,7 +32,10 @@ import com.aurora.gplayapi.model.StreamCluster
 import com.aurora.store.R
 import com.aurora.store.compose.composable.app.AppListItem
 import com.aurora.store.compose.composable.app.LargeAppListItem
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvStreamRows
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 private const val LOAD_MORE_THRESHOLD = 2
@@ -48,6 +51,19 @@ fun StreamCarousel(
     onClusterScrolled: (StreamCluster) -> Unit = {},
     onScrolledToEnd: () -> Unit = {}
 ) {
+    if (LocalUI.current == UI.TV) {
+        TvStreamRows(
+            modifier = modifier,
+            streamBundle = streamBundle,
+            filterSingleAppClusters = filterSingleAppClusters,
+            onAppClick = onAppClick,
+            onMoreClick = onHeaderClick,
+            onClusterScrolled = onClusterScrolled,
+            onScrolledToEnd = onScrolledToEnd
+        )
+        return
+    }
+
     val bundleLoaded = streamBundle != null
     LaunchedEffect(lazyListState, bundleLoaded) {
         snapshotFlow {

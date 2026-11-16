@@ -15,6 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,16 +60,37 @@ private const val LOAD_MORE_THRESHOLD = 2
 /** Where the focused card settles below the top of the list, leaving room for its row title. */
 private val RowPivot = 64.dp
 
+/** Where the focused grid row settles below the top of the grid. */
+private val GridPivot = 16.dp
+
+/**
+ * Requests focus from [requester] once its target has been laid out, retrying for a few frames
+ * because lazy items attach after the first composition.
+ */
+@Composable
+fun RequestFocusOnce(requester: FocusRequester) {
+    LaunchedEffect(requester) {
+        repeat(10) {
+            withFrameNanos { }
+            if (runCatching { requester.requestFocus() }.getOrDefault(false)) {
+                return@LaunchedEffect
+            }
+        }
+    }
+}
+
 /**
  * TV version of the home stream: one titled row of [TvAppCard]s per cluster, scrolled so the
  * focused row and card stay in a fixed place. Loads more clusters and more apps per row as the
- * user nears the end, like the phone stream.
+ * user nears the end, like the phone stream. A single cluster is shown as a grid instead.
  */
 @Composable
 fun TvStreamRows(
     streamBundle: StreamBundle?,
     modifier: Modifier = Modifier,
+    filterSingleAppClusters: Boolean = true,
     onAppClick: (App) -> Unit = {},
+    onMoreClick: (StreamCluster) -> Unit = {},
     onClusterScrolled: (StreamCluster) -> Unit = {},
     onScrolledToEnd: () -> Unit = {}
 ) {
@@ -90,7 +116,11 @@ fun TvStreamRows(
     val clusters = streamBundle.clusters
         .distinctBy { it.id }
         .map { cluster -> cluster.copy(apps = cluster.apps.distinctBy { it.packageName }) }
-        .filter { it.apps.isNotEmpty() && it.title.isNotBlank() }
+        .filter { cluster ->
+            cluster.apps.isNotEmpty() &&
+                cluster.title.isNotBlank() &&
+                (!filterSingleAppClusters || cluster.apps.size > 1)
+        }
 
     if (clusters.isEmpty()) {
         Placeholder(
@@ -101,20 +131,27 @@ fun TvStreamRows(
         return
     }
 
+    // A single list (a category or a "more" page) reads better as a grid
+    if (clusters.size == 1) {
+        val cluster = clusters.first()
+        TvAppGrid(
+            modifier = modifier,
+            apps = cluster.apps,
+            hasMore = cluster.hasNext() || streamBundle.hasNext(),
+            onAppClick = onAppClick,
+            onLoadMore = {
+                if (cluster.hasNext()) onClusterScrolled(cluster) else onScrolledToEnd()
+            }
+        )
+        return
+    }
+
     // Focus the last focused card (the first one on a fresh start) whenever the rows come back,
     // e.g. after returning from an app's details, so the remote picks up where it left off
     var focusedRow by rememberSaveable { mutableIntStateOf(0) }
     var focusedCard by rememberSaveable { mutableIntStateOf(0) }
     val restoreRequester = remember { FocusRequester() }
-    LaunchedEffect(Unit) {
-        // The card only attaches once the lists have laid out, so retry for a few frames
-        repeat(10) {
-            withFrameNanos { }
-            if (runCatching { restoreRequester.requestFocus() }.getOrDefault(false)) {
-                return@LaunchedEffect
-            }
-        }
-    }
+    RequestFocusOnce(restoreRequester)
 
     TvPivot(leading = RowPivot) {
         LazyColumn(
@@ -124,44 +161,50 @@ fun TvStreamRows(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             itemsIndexed(items = clusters, key = { _, cluster -> cluster.id }) { index, cluster ->
-                TvClusterRow(
-                    cluster = cluster,
+                TvAppRow(
+                    title = cluster.title,
+                    apps = cluster.apps,
                     isFeatured = index == 0,
+                    hasMore = cluster.hasNext(),
+                    onLoadMore = { onClusterScrolled(cluster) },
+                    onMoreClick = if (cluster.browseUrl.isNotBlank()) {
+                        { onMoreClick(cluster) }
+                    } else {
+                        null
+                    },
                     restoreCardIndex = if (index == focusedRow) focusedCard else null,
                     restoreRequester = restoreRequester,
                     onCardFocused = { card ->
                         focusedRow = index
                         focusedCard = card
                     },
-                    onAppClick = onAppClick,
-                    onClusterScrolled = onClusterScrolled
+                    onAppClick = onAppClick
                 )
             }
             if (streamBundle.hasNext()) {
-                item(key = "loading_footer") {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(modifier = Modifier.size(32.dp))
-                    }
-                }
+                item(key = "loading_footer") { LoadingFooter() }
             }
         }
     }
 }
 
+/**
+ * Titled row of [TvAppCard]s. Keeps the focused card at the row's start, asks for more apps
+ * ([onLoadMore]) near the end, and can end with a "More" card that opens the full list.
+ */
 @Composable
-private fun TvClusterRow(
-    cluster: StreamCluster,
-    isFeatured: Boolean,
-    restoreCardIndex: Int?,
-    restoreRequester: FocusRequester,
-    onCardFocused: (Int) -> Unit,
+fun TvAppRow(
+    title: String,
+    apps: List<App>,
     onAppClick: (App) -> Unit,
-    onClusterScrolled: (StreamCluster) -> Unit
+    modifier: Modifier = Modifier,
+    isFeatured: Boolean = false,
+    hasMore: Boolean = false,
+    onLoadMore: () -> Unit = {},
+    onMoreClick: (() -> Unit)? = null,
+    restoreCardIndex: Int? = null,
+    restoreRequester: FocusRequester? = null,
+    onCardFocused: (Int) -> Unit = {}
 ) {
     val rowState = rememberLazyListState()
     val reachedEnd by remember {
@@ -171,28 +214,11 @@ private fun TvClusterRow(
         }
     }
     LaunchedEffect(reachedEnd) {
-        if (reachedEnd && cluster.hasNext()) onClusterScrolled(cluster)
+        if (reachedEnd && hasMore) onLoadMore()
     }
 
-    Column {
-        Text(
-            modifier = Modifier.padding(
-                start = TvDimens.ScreenPaddingHorizontal,
-                end = TvDimens.ScreenPaddingHorizontal,
-                top = 12.dp,
-                bottom = 14.dp
-            ),
-            text = cluster.title,
-            // The first row gets a large headline, later rows a quieter title (sampled sizes)
-            style = if (isFeatured) {
-                MaterialTheme.typography.headlineMedium
-            } else {
-                MaterialTheme.typography.titleMedium
-            },
-            color = if (isFeatured) TvOnSurface else TvSectionTitle,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+    Column(modifier = modifier) {
+        TvSectionTitle(title = title, isFeatured = isFeatured)
 
         TvPivot(leading = TvDimens.ScreenPaddingHorizontal) {
             LazyRow(
@@ -204,13 +230,13 @@ private fun TvClusterRow(
                 horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing)
             ) {
                 itemsIndexed(
-                    items = cluster.apps,
+                    items = apps.distinctBy { it.packageName },
                     key = { _, app -> app.packageName }
                 ) { index, app ->
                     TvAppCard(
                         modifier = Modifier
                             .then(
-                                if (index == restoreCardIndex) {
+                                if (index == restoreCardIndex && restoreRequester != null) {
                                     Modifier.focusRequester(restoreRequester)
                                 } else {
                                     Modifier
@@ -221,7 +247,117 @@ private fun TvClusterRow(
                         onClick = { onAppClick(app) }
                     )
                 }
+                if (onMoreClick != null) {
+                    item(key = "more") { TvMoreCard(onClick = onMoreClick) }
+                }
             }
         }
+    }
+}
+
+/**
+ * Row or section title on TV: a large headline for the first (featured) row, a quieter grey title
+ * for the rest, with sizes sampled from the TV Play Store.
+ */
+@Composable
+fun TvSectionTitle(title: String, modifier: Modifier = Modifier, isFeatured: Boolean = false) {
+    Text(
+        modifier = modifier.padding(
+            start = TvDimens.ScreenPaddingHorizontal,
+            end = TvDimens.ScreenPaddingHorizontal,
+            top = 12.dp,
+            bottom = 14.dp
+        ),
+        text = title,
+        style = if (isFeatured) {
+            MaterialTheme.typography.headlineMedium
+        } else {
+            MaterialTheme.typography.titleMedium
+        },
+        color = if (isFeatured) TvOnSurface else TvSectionTitle,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+/**
+ * Grid of [TvAppCard]s for a single list of apps, loading more near the end. [badge] can label
+ * cards (e.g. chart positions) and [header] adds a full-width item on top.
+ */
+@Composable
+fun TvAppGrid(
+    apps: List<App>,
+    onAppClick: (App) -> Unit,
+    modifier: Modifier = Modifier,
+    hasMore: Boolean = false,
+    onLoadMore: () -> Unit = {},
+    badge: ((index: Int) -> String?)? = null
+) {
+    val gridState = rememberLazyGridState()
+    val distinctApps = apps.distinctBy { it.packageName }
+    LaunchedEffect(gridState, hasMore) {
+        snapshotFlow {
+            val last = gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+            last >= gridState.layoutInfo.totalItemsCount - TvDimens.GRID_COLUMNS
+        }.distinctUntilChanged().collect { reachedEnd ->
+            if (reachedEnd && hasMore) onLoadMore()
+        }
+    }
+
+    // Focus the last focused card (the first one on a fresh start)
+    var focusedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val restoreRequester = remember { FocusRequester() }
+    RequestFocusOnce(restoreRequester)
+
+    TvPivot(leading = GridPivot) {
+        LazyVerticalGrid(
+            modifier = modifier
+                .fillMaxSize()
+                .focusRestorer(),
+            state = gridState,
+            columns = GridCells.Fixed(TvDimens.GRID_COLUMNS),
+            contentPadding = PaddingValues(
+                start = TvDimens.ScreenPaddingHorizontal,
+                end = TvDimens.ScreenPaddingHorizontal,
+                top = 16.dp,
+                bottom = 48.dp
+            ),
+            horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            gridItemsIndexed(items = distinctApps, key = { _, app ->
+                app.packageName
+            }) { index, app ->
+                TvAppCard(
+                    modifier = Modifier
+                        .then(
+                            if (index == focusedIndex) {
+                                Modifier.focusRequester(restoreRequester)
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .onFocusChanged { if (it.hasFocus) focusedIndex = index },
+                    app = app,
+                    badge = badge?.invoke(index),
+                    onClick = { onAppClick(app) }
+                )
+            }
+            if (hasMore) {
+                item(key = "loading", span = { GridItemSpan(maxLineSpan) }) { LoadingFooter() }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingFooter() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(modifier = Modifier.size(32.dp))
     }
 }

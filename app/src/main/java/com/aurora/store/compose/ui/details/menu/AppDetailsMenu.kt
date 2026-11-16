@@ -27,7 +27,10 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.Constants
 import com.aurora.store.R
 import com.aurora.store.compose.composable.TopAppBar
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvButton
 import com.aurora.store.data.model.AppState
 import com.aurora.store.util.PackageUtil
 
@@ -54,30 +57,54 @@ fun AppDetailsMenu(
         expanded = false
     }
 
-    IconToggleButton(checked = isFavorite, onCheckedChange = { onClick(MenuItem.FAVORITE) }) {
-        Icon(
-            painter = if (isFavorite) {
-                painterResource(R.drawable.ic_favorite_checked)
-            } else {
-                painterResource(R.drawable.ic_favorite_unchecked)
-            },
-            contentDescription = stringResource(R.string.action_favourite)
-        )
+    val isTv = LocalUI.current == UI.TV
+    val favoriteIcon = if (isFavorite) {
+        R.drawable.ic_favorite_checked
+    } else {
+        R.drawable.ic_favorite_unchecked
     }
 
-    IconButton(onClick = { onClick(MenuItem.SHARE) }) {
-        Icon(
-            painter = painterResource(R.drawable.ic_share),
-            contentDescription = stringResource(R.string.action_share)
+    if (isTv) {
+        TvButton(
+            iconRes = favoriteIcon,
+            contentDescription = stringResource(R.string.action_favourite),
+            onClick = { onClick(MenuItem.FAVORITE) }
         )
+        TvButton(
+            iconRes = R.drawable.ic_share,
+            contentDescription = stringResource(R.string.action_share),
+            onClick = { onClick(MenuItem.SHARE) }
+        )
+    } else {
+        IconToggleButton(checked = isFavorite, onCheckedChange = { onClick(MenuItem.FAVORITE) }) {
+            Icon(
+                painter = painterResource(favoriteIcon),
+                contentDescription = stringResource(R.string.action_favourite)
+            )
+        }
+
+        IconButton(onClick = { onClick(MenuItem.SHARE) }) {
+            Icon(
+                painter = painterResource(R.drawable.ic_share),
+                contentDescription = stringResource(R.string.action_share)
+            )
+        }
     }
 
     Box(modifier = modifier) {
-        IconButton(onClick = { expanded = true }) {
-            Icon(
-                painter = painterResource(R.drawable.ic_more_vert),
-                contentDescription = stringResource(R.string.menu)
+        if (isTv) {
+            TvButton(
+                iconRes = R.drawable.ic_more_vert,
+                contentDescription = stringResource(R.string.menu),
+                onClick = { expanded = true }
             )
+        } else {
+            IconButton(onClick = { expanded = true }) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more_vert),
+                    contentDescription = stringResource(R.string.menu)
+                )
+            }
         }
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             DropdownMenuItem(

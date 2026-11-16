@@ -35,3 +35,31 @@ fun TvPivot(leading: Dp, content: @Composable () -> Unit) {
     val spec = remember(leadingPx) { PivotBringIntoViewSpec(leadingPx) }
     CompositionLocalProvider(LocalBringIntoViewSpec provides spec, content = content)
 }
+
+/**
+ * Scrolls only as far as needed to show the focused item, keeping [margin] from the edges. This
+ * replaces Compose's default on TV (which centers the focused item) for pages such as app
+ * details, whose header must stay in view while its buttons have focus.
+ */
+private class MinimalBringIntoViewSpec(private val marginPx: Float) : BringIntoViewSpec {
+    override fun calculateScrollDistance(offset: Float, size: Float, containerSize: Float): Float {
+        val leading = offset
+        val trailing = offset + size
+        return when {
+            leading >= marginPx && trailing <= containerSize - marginPx -> 0f
+            leading < marginPx || size > containerSize - 2 * marginPx -> leading - marginPx
+            else -> trailing - (containerSize - marginPx)
+        }
+    }
+}
+
+/**
+ * Provides [MinimalBringIntoViewSpec] to lazy lists in [content].
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun TvMinimalScroll(margin: Dp, content: @Composable () -> Unit) {
+    val marginPx = with(LocalDensity.current) { margin.toPx() }
+    val spec = remember(marginPx) { MinimalBringIntoViewSpec(marginPx) }
+    CompositionLocalProvider(LocalBringIntoViewSpec provides spec, content = content)
+}
