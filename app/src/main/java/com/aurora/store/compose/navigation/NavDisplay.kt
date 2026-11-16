@@ -195,7 +195,9 @@ fun NavDisplay(startDestination: NavKey) {
             is Destination.AppDetails -> backstack.add(Screen.AppDetails(destination.packageName))
             is Destination.DevProfile -> backstack.add(Screen.DevProfile(destination.devId))
             is Destination.AppUpdate -> Unit
-            is Destination.StreamBrowse -> backstack.add(Screen.StreamBrowse(destination.cluster))
+            is Destination.StreamBrowse -> backstack.add(
+                Screen.StreamBrowse(destination.cluster.forBackStack())
+            )
             is Destination.GoogleLogin -> {
                 authProvider().clearSessionRejections()
                 backstack.add(Screen.GoogleLogin(destination.addAccount))
