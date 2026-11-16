@@ -484,7 +484,11 @@ private fun ScreenContentApp(
         } else {
             isChecking = false
             val requiredPermissions = setOfNotNull(
-                PermissionType.INSTALL_UNKNOWN_APPS,
+                if (AppInstaller.needsInstallPermission(context)) {
+                    PermissionType.INSTALL_UNKNOWN_APPS
+                } else {
+                    null
+                },
                 if (app.fileList.requiresObbDir()) PermissionType.STORAGE_MANAGER else null,
                 if (app.fileList.requiresObbDir()) PermissionType.EXTERNAL_STORAGE else null
             )
