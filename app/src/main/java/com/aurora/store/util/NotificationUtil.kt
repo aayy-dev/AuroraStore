@@ -293,11 +293,18 @@ object NotificationUtil {
         context: Context,
         packageName: String,
         displayName: String,
-        content: String?
+        content: String?,
+        details: String? = null
     ): Notification = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ALERTS)
         .setSmallIcon(R.drawable.ic_aurora)
         .setContentTitle(displayName)
         .setContentText(content)
+        .apply {
+            // The system's own reason (e.g. which package or signature conflicts) when expanded
+            if (!details.isNullOrBlank()) {
+                setStyle(NotificationCompat.BigTextStyle().bigText("$content\n$details"))
+            }
+        }
         .setContentIntent(getContentIntentForDetails(context, packageName))
         .setCategory(Notification.CATEGORY_ERROR)
         .setGroup(GROUP_FAILED)
@@ -364,12 +371,13 @@ object NotificationUtil {
         context: Context,
         packageName: String,
         displayName: String,
-        content: String?
+        content: String?,
+        details: String? = null
     ) {
         val notificationManager = context.getSystemService<NotificationManager>()!!
         notificationManager.notify(
             packageName.hashCode(),
-            getInstallerStatusNotification(context, packageName, displayName, content)
+            getInstallerStatusNotification(context, packageName, displayName, content, details)
         )
         refreshGroupSummaries(context)
     }

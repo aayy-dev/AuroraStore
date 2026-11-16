@@ -37,6 +37,7 @@ import com.aurora.store.data.model.BuildType
 import com.aurora.store.data.model.Installer
 import com.aurora.store.data.model.InstallerInfo
 import com.aurora.store.data.model.SessionInfo
+import com.aurora.store.data.receiver.BaseInstallerStatusReceiver
 import com.aurora.store.data.receiver.InstallerStatusReceiver
 import com.aurora.store.data.room.download.Download
 import com.aurora.store.util.PackageUtil.isSharedLibraryInstalled
@@ -85,6 +86,7 @@ class SessionInstaller @Inject constructor(
 
         override fun onFinished(sessionId: Int, success: Boolean) {
             committedSessions.remove(sessionId)
+            pendingPrompts.remove(sessionId)
 
             val sessionSet =
                 enqueuedSessions.find { it.any { session -> session.sessionId == sessionId } }
@@ -115,6 +117,13 @@ class SessionInstaller @Inject constructor(
 
     companion object {
 
+        /** Confirmation intents the system handed back for sessions waiting on the user. */
+        private val pendingPrompts = ConcurrentHashMap<Int, Intent>()
+
+        fun rememberPrompt(sessionId: Int, confirmIntent: Intent) {
+            pendingPrompts[sessionId] = confirmIntent
+        }
+
         val installerInfo: InstallerInfo
             get() = InstallerInfo(
                 id = 0,
@@ -135,41 +144,85 @@ class SessionInstaller @Inject constructor(
 
         val sessionSet =
             enqueuedSessions.find { set -> set.any { it.packageName == download.packageName } }
-        if (sessionSet != null) {
-            Log.i(TAG, "${download.packageName} already queued")
-            commitInstall(sessionSet.first())
-        } else {
-            Log.i(TAG, "Received session install request for ${download.packageName}")
-            val sessionInfoSet = mutableSetOf<SessionInfo>()
+        if (sessionSet != null && resumeQueued(download, sessionSet)) return
 
-            download.sharedLibs.forEach {
-                // Shared library packages cannot be updated
-                if (!isSharedLibraryInstalled(context, it.packageName, it.versionCode)) {
-                    stageInstall(
-                        download.packageName,
-                        download.versionCode,
-                        it.packageName
-                    )?.let { sessionID ->
-                        sessionInfoSet.add(SessionInfo(sessionID, it.packageName, it.versionCode))
-                    }
+        Log.i(TAG, "Received session install request for ${download.packageName}")
+        val sessionInfoSet = mutableSetOf<SessionInfo>()
+
+        download.sharedLibs.forEach {
+            // Shared library packages cannot be updated
+            if (!isSharedLibraryInstalled(context, it.packageName, it.versionCode)) {
+                stageInstall(
+                    download.packageName,
+                    download.versionCode,
+                    it.packageName
+                )?.let { sessionID ->
+                    sessionInfoSet.add(SessionInfo(sessionID, it.packageName, it.versionCode))
                 }
             }
-
-            stageInstall(download.packageName, download.versionCode)?.let { sessionID ->
-                sessionInfoSet.add(
-                    SessionInfo(
-                        sessionID,
-                        download.packageName,
-                        download.versionCode,
-                        download.displayName
-                    )
-                )
-            }
-
-            // Enqueue and trigger installation
-            enqueuedSessions.add(sessionInfoSet)
-            commitInstall(sessionInfoSet.first())
         }
+
+        stageInstall(download.packageName, download.versionCode)?.let { sessionID ->
+            sessionInfoSet.add(
+                SessionInfo(
+                    sessionID,
+                    download.packageName,
+                    download.versionCode,
+                    download.displayName
+                )
+            )
+        }
+
+        // Enqueue and trigger installation (staging already reported any failure)
+        val head = sessionInfoSet.firstOrNull() ?: return
+        enqueuedSessions.add(sessionInfoSet)
+        commitInstall(head)
+    }
+
+    /**
+     * Handles a repeat install request (a retry, "Update all" again, the periodic update check)
+     * for a package that already has staged sessions. Returns false if those sessions died and
+     * fresh ones must be staged.
+     *
+     * A session that is already committed is never committed again: see [commitNextPending]
+     * for why that breaks the install. If it is waiting on the user, the system's confirmation
+     * is shown again instead; otherwise the system is still working on it and there's nothing
+     * to do.
+     */
+    private fun resumeQueued(download: Download, sessionSet: MutableSet<SessionInfo>): Boolean {
+        val packageName = download.packageName
+        val head = sessionSet.firstOrNull()
+        if (head == null || packageInstaller.getSessionInfo(head.sessionId) == null) {
+            Log.w(TAG, "Queued session(s) for $packageName are gone, staging again")
+            sessionSet.forEach {
+                committedSessions.remove(it.sessionId)
+                pendingPrompts.remove(it.sessionId)
+            }
+            enqueuedSessions.remove(sessionSet)
+            return false
+        }
+
+        if (head.sessionId !in committedSessions) {
+            Log.i(TAG, "$packageName already queued, committing")
+            commitInstall(head)
+            return true
+        }
+
+        removeFromInstallQueue(packageName)
+        val prompt = pendingPrompts[head.sessionId]
+        if (prompt == null) {
+            Log.i(TAG, "$packageName is already being installed")
+        } else {
+            Log.i(TAG, "$packageName is waiting on the user, showing the confirmation again")
+            AuroraApp.events.send(InstallerEvent.PendingUserAction(packageName))
+            BaseInstallerStatusReceiver.showConfirmation(
+                context = context,
+                confirmIntent = prompt,
+                packageName = packageName,
+                displayName = download.displayName
+            )
+        }
+        return true
     }
 
     override fun cancelInstall(packageName: String) {
@@ -180,6 +233,7 @@ class SessionInstaller @Inject constructor(
         sessionSet.forEach {
             runCatching { packageInstaller.abandonSession(it.sessionId) }
             committedSessions.remove(it.sessionId)
+            pendingPrompts.remove(it.sessionId)
         }
         enqueuedSessions.remove(sessionSet)
         removeFromInstallQueue(packageName)

@@ -20,6 +20,7 @@ import com.aurora.store.data.installer.AppInstaller.Companion.ACTION_INSTALL_STA
 import com.aurora.store.data.installer.AppInstaller.Companion.EXTRA_DISPLAY_NAME
 import com.aurora.store.data.installer.AppInstaller.Companion.EXTRA_PACKAGE_NAME
 import com.aurora.store.data.installer.AppInstaller.Companion.EXTRA_VERSION_CODE
+import com.aurora.store.data.installer.SessionInstaller
 import com.aurora.store.data.installer.base.InstallerBase
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.room.download.DownloadDao
@@ -41,6 +42,41 @@ internal interface InstallerStatusEntryPoint {
 }
 
 abstract class BaseInstallerStatusReceiver : BroadcastReceiver() {
+
+    companion object {
+
+        private const val PROMPT_TAG = "InstallerStatusReceiver"
+
+        /**
+         * Shows the system's install confirmation, or posts a notification for it when Aurora
+         * is in the background and can't start activities.
+         */
+        fun showConfirmation(
+            context: Context,
+            confirmIntent: Intent,
+            packageName: String,
+            displayName: String
+        ) {
+            runOnUiThread {
+                if (!AuroraApp.isForeground) {
+                    Log.i(PROMPT_TAG, "Aurora is backgrounded, notifying instead of prompting")
+                    NotificationUtil.notifyInstallPrompt(
+                        context = context,
+                        packageName = packageName,
+                        displayName = displayName,
+                        confirmIntent = confirmIntent
+                    )
+                    return@runOnUiThread
+                }
+
+                try {
+                    context.startActivity(confirmIntent)
+                } catch (exception: Exception) {
+                    Log.e(PROMPT_TAG, "Failed to launch intent!", exception)
+                }
+            }
+        }
+    }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent?.action == ACTION_INSTALL_STATUS) {
@@ -80,7 +116,7 @@ abstract class BaseInstallerStatusReceiver : BroadcastReceiver() {
             } else {
                 AuroraApp.enqueuedInstalls.remove(packageName)
                 if (status != PackageInstaller.STATUS_FAILURE_ABORTED) {
-                    notifyUser(context, packageName, displayName, status)
+                    notifyUser(context, packageName, displayName, status, extra)
                 }
 
                 postStatus(status, packageName, extra, context)
@@ -109,51 +145,44 @@ abstract class BaseInstallerStatusReceiver : BroadcastReceiver() {
         context: Context,
         packageName: String,
         displayName: String,
-        status: Int
+        status: Int,
+        extra: String?
     ) {
         NotificationUtil.notifyInstallFailed(
             context,
             packageName,
             displayName,
-            InstallerBase.getErrorString(context, status)
+            InstallerBase.getErrorString(context, status),
+            details = extra
         )
     }
 
     internal fun promptUser(context: Context, intent: Intent) {
-        runOnUiThread {
-            val launchIntent = IntentCompat.getParcelableExtra(
-                intent,
-                Intent.EXTRA_INTENT,
-                Intent::class.java
-            )
+        val launchIntent = IntentCompat.getParcelableExtra(
+            intent,
+            Intent.EXTRA_INTENT,
+            Intent::class.java
+        )
 
-            if (launchIntent == null) {
-                Log.w(TAG, "No launch intent found in the installation request.")
-                return@runOnUiThread
-            }
-
-            launchIntent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
-            launchIntent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.packageName)
-            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-            if (!AuroraApp.isForeground) {
-                Log.i(TAG, "Aurora is backgrounded, notifying instead of prompting")
-                val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME) ?: return@runOnUiThread
-                NotificationUtil.notifyInstallPrompt(
-                    context = context,
-                    packageName = packageName,
-                    displayName = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: packageName,
-                    confirmIntent = launchIntent
-                )
-                return@runOnUiThread
-            }
-
-            try {
-                context.startActivity(launchIntent)
-            } catch (exception: Exception) {
-                Log.e(TAG, "Failed to launch intent!", exception)
-            }
+        if (launchIntent == null) {
+            Log.w(TAG, "No launch intent found in the installation request.")
+            return
         }
+
+        launchIntent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true)
+        launchIntent.putExtra(Intent.EXTRA_INSTALLER_PACKAGE_NAME, context.packageName)
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME) ?: return
+        val sessionId = intent.getIntExtra(EXTRA_SESSION_ID, -1)
+        if (sessionId != -1) SessionInstaller.rememberPrompt(sessionId, launchIntent)
+
+        showConfirmation(
+            context = context,
+            confirmIntent = launchIntent,
+            packageName = packageName,
+            displayName = intent.getStringExtra(EXTRA_DISPLAY_NAME) ?: packageName
+        )
     }
 
     open fun doAppropriatePrompt(context: Context, intent: Intent, sessionId: Int) {
