@@ -568,8 +568,6 @@
     <string name="title_install_favourites">Kedvencek telepítése?</string>
     <string name="install_favourites_summary">Ez %1$d alkalmazás letöltését és telepítését fogja elvégezni.</string>
     <string name="install_favourites_warning">Lehet, hogy minden alkalmazáshoz külön telepítési megerősítés jelenik meg.</string>
-    <string name="pref_ui_dynamic_color">Dinamikus színek</string>
-    <string name="pref_ui_dynamic_color_desc">Használja a háttérkép színeit. Kikapcsolva az Aurora saját színpalettáját használja.</string>
     <string name="toast_fav_install_enqueued">%1$d alkalmazás telepítése</string>
     <string name="toast_fav_install_none">Nincs mit telepíteni</string>
     <string name="toast_fav_install_failed">Az alkalmazás részleteinek lekérése sikertelen</string>

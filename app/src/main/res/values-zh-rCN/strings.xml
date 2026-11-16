@@ -566,8 +566,6 @@
     <string name="title_install_favourites">安装收藏的应用？</string>
     <string name="install_favourites_summary">这会下载并安装 %1$d 个应用。</string>
     <string name="install_favourites_warning">你可能会看到每个应用单独的安装提示。</string>
-    <string name="pref_ui_dynamic_color">动态色</string>
-    <string name="pref_ui_dynamic_color_desc">使用来自壁纸的颜色。关闭使用 Aurora 的品牌调色盘。</string>
     <string name="toast_fav_install_enqueued">正在安装 %1$d 个应用</string>
     <string name="toast_fav_install_none">没有可安装的</string>
     <string name="toast_fav_install_failed">未能获取应用详情</string>

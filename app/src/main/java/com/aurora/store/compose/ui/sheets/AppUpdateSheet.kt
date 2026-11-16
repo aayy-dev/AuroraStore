@@ -22,14 +22,13 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -253,7 +252,7 @@ private fun AppHeader(update: Update, onShowDetails: () -> Unit) {
             )
         }
 
-        FilledTonalButton(onClick = onShowDetails) {
+        OutlinedButton(onClick = onShowDetails) {
             Text(stringResource(R.string.updates_app_details))
         }
     }
@@ -267,7 +266,7 @@ private fun Item(label: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.spacing_xsmall))
-            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onClick)
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
@@ -291,7 +290,7 @@ private fun AccountAccordion(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimensionResource(R.dimen.spacing_xsmall))
-            .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+            .clip(MaterialTheme.shapes.large)
             .clickable(onClick = onToggle)
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
@@ -323,7 +322,7 @@ private fun AccountAccordion(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(R.dimen.spacing_xsmall))
-                .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                .clip(MaterialTheme.shapes.large)
                 .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                 .padding(vertical = dimensionResource(R.dimen.spacing_xsmall))
         ) {

@@ -580,7 +580,6 @@
     <string name="confirm_deeplink_sheet_message">Een externe app wilt Aurora Store openen</string>
     <string name="confirm_deeplink_sheet_source">Geopend via %1$s</string>
     <string name="title_install_favourites">Favorieten installeren?</string>
-    <string name="pref_ui_dynamic_color">Dynamische kleuren</string>
     <string name="toast_fav_install_enqueued">%1$d apps worden geïnstalleert</string>
     <string name="toast_fav_install_none">Niks om te installeren</string>
     <plurals name="favourites_count">
@@ -602,7 +601,6 @@
     <string name="confirm_deeplink_summary">Vraag bevestiging voordat een app-vermelding via een link wordt geopend, om te voorkomen dat advertenties Aurora Store zonder jouw toestemming openen.</string>
     <string name="confirm_deeplink_sheet_title">Doorgaan naar Aurora Store?</string>
     <string name="install_favourites_warning">Voor elke app kan een aparte installatieprompt verschijnen.</string>
-    <string name="pref_ui_dynamic_color_desc">Gebruik kleuren van je achtergrond. Zet uit voor het merkkleurenpalet van Aurora.</string>
     <string name="toast_fav_install_failed">Ophalen van app-gegevens mislukt</string>
     <string name="account_exists">Account is al toegevoegd</string>
     <string name="action_update_anyway">Toch bijwerken</string>

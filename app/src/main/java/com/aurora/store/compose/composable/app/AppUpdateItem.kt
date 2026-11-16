@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -108,13 +109,13 @@ fun AppUpdateItem(
             }
 
             installing -> {
-                OutlinedButton(onClick = {}, enabled = false) {
+                TextButton(onClick = {}, enabled = false) {
                     Text(stringResource(R.string.action_installing))
                 }
             }
 
             inProgress -> {
-                OutlinedButton(onClick = onCancel) {
+                TextButton(onClick = onCancel) {
                     Text(stringResource(R.string.action_cancel))
                 }
             }

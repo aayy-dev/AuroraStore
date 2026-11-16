@@ -570,8 +570,6 @@
     <string name="title_install_favourites">Instalar favoritos?</string>
     <string name="install_favourites_summary">Fazer isso baixará e instalará %1$d apps.</string>
     <string name="install_favourites_warning">Você pode ver pedidos de instalação para cada app.</string>
-    <string name="pref_ui_dynamic_color">Cores dinâmicas</string>
-    <string name="pref_ui_dynamic_color_desc">Usar cores do seu plano de fundo. Desative para usar a paleta de cores da marca da Aurora.</string>
     <string name="toast_fav_install_enqueued">Instalando %1$d apps</string>
     <string name="toast_fav_install_none">Nada a instalar</string>
     <string name="toast_fav_install_failed">Falha ao obter detalhes do app</string>

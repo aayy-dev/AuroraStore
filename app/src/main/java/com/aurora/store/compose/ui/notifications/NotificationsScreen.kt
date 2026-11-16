@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -162,7 +162,7 @@ private fun PendingInstallItem(
                     Text(stringResource(R.string.action_clear))
                 }
                 if (!isInstalling) {
-                    FilledTonalButton(onClick = onInstall) {
+                    OutlinedButton(onClick = onInstall) {
                         Text(stringResource(R.string.action_install))
                     }
                 }

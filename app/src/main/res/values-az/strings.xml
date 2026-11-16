@@ -547,8 +547,6 @@
     <string name="pref_theme_style_system">Sistemi izləyin</string>
     <string name="pref_theme_style_light">İşıqlı</string>
     <string name="pref_theme_style_dark">Qaranlıq</string>
-    <string name="pref_ui_dynamic_color">Dinamik rənglər</string>
-    <string name="pref_ui_dynamic_color_desc">Divar kağızınızdakı rənglərdən istifadə edin. Aurora brend palitrası üçün söndürün.</string>
     <string name="action_skip">Keçmək</string>
     <string name="microg_removed_auth_warning">microG artıq quraşdırılmayıb. İşlərin problemsiz işləməsi üçün quraşdırmanı yenidən başladın.</string>
     <string name="microg_installer_subtitle">microG müşayiətçi tətbiqinin quraşdırılması tələb olunur</string>

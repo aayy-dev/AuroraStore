@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -28,7 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -49,7 +53,8 @@ private data class Stat(
     val label: String,
     val value: String? = null,
     @DrawableRes val iconRes: Int? = null,
-    val showStar: Boolean = false
+    val showStar: Boolean = false,
+    val valueDescription: String? = null
 )
 
 /**
@@ -66,8 +71,18 @@ fun Tags(app: App) {
                 Stat(
                     value = app.labeledRating,
                     showStar = true,
+                    valueDescription = stringResource(
+                        R.string.rating_content_description,
+                        app.labeledRating
+                    ),
                     label = app.rating.abbreviatedLabel.takeIf { it.isNotBlank() }
-                        ?.let { stringResource(R.string.details_stat_reviews, it) }
+                        ?.let {
+                            pluralStringResource(
+                                R.plurals.details_stat_reviews,
+                                reviewCount(app).coerceAtMost(Int.MAX_VALUE.toLong()).toInt(),
+                                it
+                            )
+                        }
                         ?: stringResource(R.string.action_filter_rating)
                 )
             )
@@ -127,17 +142,28 @@ fun Tags(app: App) {
     }
 }
 
+/**
+ * Total number of ratings across all star levels, used to pick the right plural form.
+ */
+private fun reviewCount(app: App): Long = with(app.rating) {
+    oneStar.toLong() + twoStar.toLong() + threeStar.toLong() + fourStar.toLong() +
+        fiveStar.toLong()
+}
+
 @Composable
 private fun StatItem(stat: Stat) {
+    val description = listOfNotNull(stat.valueDescription ?: stat.value, stat.label)
+        .joinToString(", ")
     Column(
         modifier = Modifier
+            .clearAndSetSemantics { contentDescription = description }
             .widthIn(min = 96.dp)
             .padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         Row(
-            modifier = Modifier.height(24.dp),
+            modifier = Modifier.heightIn(min = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {

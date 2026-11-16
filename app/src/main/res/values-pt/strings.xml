@@ -578,8 +578,6 @@
     <string name="pref_notification_disabled_desc">Toque para ativar notificações para a Aurora Store</string>
     <string name="updates_self_header">Autoatualizar</string>
     <string name="updates_self_desc">Uma nova compilação da Aurora Store está disponível</string>
-    <string name="pref_ui_dynamic_color">Cores dinâmicas</string>
-    <string name="pref_ui_dynamic_color_desc">Usar cores do seu plano de fundo. Desative para usar a paleta de cores da marca da Aurora.</string>
     <string name="toast_fav_install_enqueued">A instalar %1$d apps</string>
     <string name="toast_fav_install_none">Nada a instalar</string>
     <string name="toast_fav_install_failed">Falha ao obter pormenores da app</string>

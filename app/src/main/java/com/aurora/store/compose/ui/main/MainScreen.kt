@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -34,8 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
@@ -43,13 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.aurora.extensions.requiresObbDir
 import com.aurora.extensions.toast
 import com.aurora.store.MainViewModel
 import com.aurora.store.R
+import com.aurora.store.compose.composable.AccountAvatar
 import com.aurora.store.compose.composable.InsufficientStorageDialog
 import com.aurora.store.compose.composable.PermissionUpdateWarningDialog
 import com.aurora.store.compose.composable.TrackerUpdateWarningDialog
@@ -442,19 +437,10 @@ private fun HomeTopBar(
                 )
             }
             IconButton(onClick = onAvatarClick) {
-                AsyncImage(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(avatarUrl)
-                        .crossfade(true)
-                        .build(),
-                    placeholder = painterResource(R.drawable.ic_account),
-                    error = painterResource(R.drawable.ic_account),
-                    fallback = painterResource(R.drawable.ic_account),
-                    contentDescription = stringResource(R.string.title_more),
-                    contentScale = ContentScale.Crop
+                AccountAvatar(
+                    url = avatarUrl,
+                    size = 32.dp,
+                    contentDescription = stringResource(R.string.title_more)
                 )
             }
         }

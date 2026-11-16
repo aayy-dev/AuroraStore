@@ -570,8 +570,6 @@
     <string name="title_install_favourites">Installer les favoris ?</string>
     <string name="install_favourites_summary">%1$d applis seront téléchargées et installées.</string>
     <string name="install_favourites_warning">Il se peut qu\'une invite d\'installation distincte s\'affiche pour chaque appli.</string>
-    <string name="pref_ui_dynamic_color">Couleurs dynamiques</string>
-    <string name="pref_ui_dynamic_color_desc">Utilisez les couleurs de votre fond d’écran. Désactivez la palette de couleurs d’Aurora.</string>
     <string name="toast_fav_install_enqueued">Installation de %1$d applis</string>
     <string name="toast_fav_install_none">Rien à installer</string>
     <string name="toast_fav_install_failed">Impossible de récupérer les informations sur l\'appli</string>

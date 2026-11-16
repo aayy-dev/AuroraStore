@@ -568,8 +568,6 @@
     <string name="title_install_favourites">Favori uygulamalar kurulsun mu?</string>
     <string name="install_favourites_summary">Bu, %1$d uygulamayı indirip kuracaktır.</string>
     <string name="install_favourites_warning">Her uygulama için ayrı bir kurulum isteği görebilirsiniz.</string>
-    <string name="pref_ui_dynamic_color">Değişken renkler</string>
-    <string name="pref_ui_dynamic_color_desc">Duvar kağıdınızdaki renkleri kullanın. Aurora\'nın marka renklerini kullanmayın.</string>
     <string name="toast_fav_install_enqueued">%1$d uygulama kuruluyor</string>
     <string name="toast_fav_install_none">Kurulacak bir şey yok</string>
     <string name="toast_fav_install_failed">Uygulama ayrıntıları alınamadı</string>

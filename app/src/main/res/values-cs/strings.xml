@@ -572,8 +572,6 @@
     <string name="title_install_favourites">Nainstalovat oblíbené?</string>
     <string name="install_favourites_summary">Tato možnost stáhne a nainstaluje %1$d aplikací.</string>
     <string name="install_favourites_warning">Pro každou aplikaci možná uvidíte vlastní dotaz na instalaci.</string>
-    <string name="pref_ui_dynamic_color">Dynamické barvy</string>
-    <string name="pref_ui_dynamic_color_desc">Použít barvy z vašeho pozadí. Vypněte pro použití barev značky Aurora.</string>
     <string name="toast_fav_install_enqueued">Instalace %1$d aplikací</string>
     <string name="toast_fav_install_none">Nic k instalaci</string>
     <string name="toast_fav_install_failed">Nepodařilo se načíst informace o aplikaci</string>

@@ -570,8 +570,6 @@
     <string name="title_install_favourites">¿Instalar favoritos?</string>
     <string name="install_favourites_summary">Esto descargará e instalará %1$d aplicaciones.</string>
     <string name="install_favourites_warning">Es posible que veas un aviso de instalación por separado para cada aplicación.</string>
-    <string name="pref_ui_dynamic_color">Colores dinámicos</string>
-    <string name="pref_ui_dynamic_color_desc">Usar los colores de tu fondo de pantalla. Desactívalo para usar la paleta de marca de Aurora.</string>
     <string name="toast_fav_install_enqueued">Instalando %1$d aplicaciones</string>
     <string name="toast_fav_install_none">Nada que instalar</string>
     <string name="toast_fav_install_failed">No se pudieron obtener los detalles de la aplicación</string>

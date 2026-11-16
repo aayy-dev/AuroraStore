@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -109,7 +109,7 @@ private fun ScreenContent(
                         dimensionResource(R.dimen.spacing_medium)
                     )
                 ) {
-                    FilledTonalButton(
+                    OutlinedButton(
                         modifier = Modifier.weight(1F),
                         onClick = { activity?.onBackPressedDispatcher?.onBackPressed() }
                     ) {

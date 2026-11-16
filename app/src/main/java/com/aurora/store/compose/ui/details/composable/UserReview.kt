@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -43,6 +45,7 @@ import coil3.request.crossfade
 import com.aurora.gplayapi.model.Review
 import com.aurora.store.R
 import com.aurora.store.compose.composable.SectionHeader
+import com.aurora.store.compose.composable.app.StarRating
 import com.aurora.store.compose.preview.ThemePreviewProvider
 
 /**
@@ -117,7 +120,7 @@ private fun ReviewSummary(review: Review, onEdit: () -> Unit, onDelete: () -> Un
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
     ) {
         Row(
-            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small)),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
@@ -128,45 +131,37 @@ private fun ReviewSummary(review: Review, onEdit: () -> Unit, onDelete: () -> Un
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .requiredSize(dimensionResource(R.dimen.icon_size_small))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.radius_medium)))
+                    .requiredSize(40.dp)
+                    .clip(CircleShape)
             )
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    dimensionResource(R.dimen.spacing_xsmall)
+                )
+            ) {
                 Text(
                     text = review.userName,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(
-                        dimensionResource(R.dimen.spacing_xsmall)
+                        dimensionResource(R.dimen.spacing_small)
                     ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    AndroidView(
-                        factory = { context ->
-                            RatingBar(
-                                context,
-                                null,
-                                android.R.attr.ratingBarStyleIndicator
-                            ).apply {
-                                numStars = 5
-                                stepSize = 1F
-                                setIsIndicator(true)
-                            }
-                        },
-                        update = { it.rating = review.rating.toFloat() }
-                    )
+                    StarRating(rating = review.rating.toFloat(), starSize = 12.dp)
                     if (review.timeStamp > 0L) {
-                        Text(text = "·", style = MaterialTheme.typography.bodySmall)
                         Text(
                             text = DateUtils.formatDateTime(
                                 LocalContext.current,
                                 review.timeStamp,
                                 DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_YEAR
                             ),
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -178,7 +173,11 @@ private fun ReviewSummary(review: Review, onEdit: () -> Unit, onDelete: () -> Un
         }
 
         if (review.comment.isNotBlank()) {
-            Text(text = review.comment, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = review.comment,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
         Row(

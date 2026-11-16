@@ -592,8 +592,6 @@
     <string name="title_install_favourites">Nainštalovať do obľúbených?</string>
     <string name="install_favourites_summary">Týmto sa stiahne a nainštaluje %1$d aplikácií.</string>
     <string name="install_favourites_warning">Pre každú aplikáciu sa môže zobraziť samostatná výzva na inštaláciu.</string>
-    <string name="pref_ui_dynamic_color">Živé farby</string>
-    <string name="pref_ui_dynamic_color_desc">Použite farby z vašej tapety. Vypnite pre farebnú paletu značky Aurora.</string>
     <string name="toast_fav_install_enqueued">Inštalujem %1$d aplikácií</string>
     <string name="toast_fav_install_none">Nie je potrebné nič inštalovať</string>
     <string name="toast_fav_install_failed">Nepodarilo sa načítať informácie o aplikácii</string>

@@ -520,8 +520,6 @@
     <string name="pref_theme_style_system">시스템 테마 사용</string>
     <string name="pref_theme_style_light">밝게</string>
     <string name="pref_theme_style_dark">어둡게</string>
-    <string name="pref_ui_dynamic_color">동적 색상</string>
-    <string name="pref_ui_dynamic_color_desc">배경화면의 색상을 사용합니다. Aurora의 브랜드 색상을 사용하려면 끄세요.</string>
     <string name="toast_fav_install_enqueued">앱 %1$d개 설치 중</string>
     <string name="toast_fav_install_none">설치할 앱 없음</string>
     <string name="status_installing">설치 중</string>

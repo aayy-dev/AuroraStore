@@ -572,8 +572,6 @@
     <string name="title_install_favourites">Встановити улюблене?</string>
     <string name="install_favourites_summary">Це завантажить і встановить %1$d застосунків.</string>
     <string name="install_favourites_warning">Ви можете побачити окремий запит на встановлення для кожного застосунку.</string>
-    <string name="pref_ui_dynamic_color">Динамічні кольори</string>
-    <string name="pref_ui_dynamic_color_desc">Використовувати кольори з вашої шпалери. Вимкніть для фірмової палітри Aurora.</string>
     <string name="toast_fav_install_enqueued">Встановлення %1$d застосунків</string>
     <string name="toast_fav_install_none">Нічого встановлювати</string>
     <string name="toast_fav_install_failed">Не вдалося отримати відомості про застосунок</string>

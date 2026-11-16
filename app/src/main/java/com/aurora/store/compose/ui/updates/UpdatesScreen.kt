@@ -10,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -298,12 +298,20 @@ private fun LazyListScope.updateItems(
 
 /**
  * Play Store style "Update all" button: filled while idle, outlined when it cancels active updates.
+ * It stays a single button (only its colors change) so keyboard and screen reader focus is kept
+ * when the label flips.
  */
 @Composable
 private fun UpdateAllButton(label: String, isCancel: Boolean, onClick: () -> Unit) {
-    if (isCancel) {
-        OutlinedButton(onClick = onClick) { Text(label) }
-    } else {
-        Button(onClick = onClick) { Text(label) }
+    Button(
+        onClick = onClick,
+        colors = if (isCancel) {
+            ButtonDefaults.outlinedButtonColors()
+        } else {
+            ButtonDefaults.buttonColors()
+        },
+        border = if (isCancel) ButtonDefaults.outlinedButtonBorder(enabled = true) else null
+    ) {
+        Text(label)
     }
 }

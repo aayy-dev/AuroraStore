@@ -79,7 +79,7 @@ fun AuroraTheme(content: @Composable () -> Unit) {
     MaterialExpressiveTheme(
         colorScheme = if (darkTheme) StoreDarkColorScheme else StoreLightColorScheme,
         shapes = StoreShapes,
-        typography = StoreTypography,
+        typography = rememberStoreTypography(),
         content = content
     )
 }
