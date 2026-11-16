@@ -55,6 +55,7 @@ import com.aurora.store.compose.composition.LocalNetworkStatus
 import com.aurora.store.compose.composition.LocalUI
 import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
+import com.aurora.store.compose.theme.TvDimens
 import com.aurora.store.compose.ui.apps.AppsGamesScreen
 import com.aurora.store.compose.ui.commons.MoreSheet
 import com.aurora.store.compose.ui.commons.NetworkScreen
@@ -345,7 +346,20 @@ fun MainScreen(
             onAvatarClick = { showMoreSheet = true }
         ) {
             val tab = MainTab.entries[tvTab]
-            saveableStateHolder.SaveableStateProvider(tab.name) { pageContent(tab) }
+            saveableStateHolder.SaveableStateProvider(tab.name) {
+                // Updates is still the phone list, so keep it off the screen edges
+                if (tab == MainTab.UPDATES) {
+                    Box(
+                        modifier = Modifier.padding(
+                            horizontal = TvDimens.ScreenPaddingHorizontal - 24.dp
+                        )
+                    ) {
+                        pageContent(tab)
+                    }
+                } else {
+                    pageContent(tab)
+                }
+            }
         }
     } else {
         Scaffold(

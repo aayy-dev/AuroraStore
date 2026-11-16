@@ -5,12 +5,19 @@
 
 package com.aurora.store.compose.theme
 
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.LocalRippleConfiguration
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme as TvMaterialTheme
 import androidx.tv.material3.darkColorScheme as tvDarkColorScheme
+import com.aurora.store.compose.ui.tv.TvFocusIndication
 
 /*
  * Palette sampled from the Play Store app on Google TV (Android 16, Nov 2026). The TV store is
@@ -63,13 +70,33 @@ private val TvMaterialColorScheme = tvDarkColorScheme(
     border = TvOnSurface
 )
 
+private val TvRippleConfiguration = RippleConfiguration(
+    color = Color.White,
+    rippleAlpha = RippleAlpha(
+        draggedAlpha = 0.16f,
+        focusedAlpha = 0.32f,
+        hoveredAlpha = 0.08f,
+        pressedAlpha = 0.4f
+    )
+)
+
 /**
  * Supplies the Compose for TV theme (used by its focusable surfaces, buttons and cards) on top of
- * the app's Material 3 theme.
+ * the app's Material 3 theme, plus a TV focus indication for the Material components.
  */
 @Composable
 fun AuroraTvTheme(content: @Composable () -> Unit) {
-    TvMaterialTheme(colorScheme = TvMaterialColorScheme, content = content)
+    TvMaterialTheme(colorScheme = TvMaterialColorScheme) {
+        // Phone-style components reused on TV get a clearly visible focus: an outline for plain
+        // clickable rows, and a much stronger focus layer for Material buttons and chips
+        CompositionLocalProvider(
+            LocalIndication provides TvFocusIndication,
+            LocalRippleConfiguration provides TvRippleConfiguration,
+            // Text and icons outside a Material surface default to light, not black
+            LocalContentColor provides TvOnSurface,
+            content = content
+        )
+    }
 }
 
 /**

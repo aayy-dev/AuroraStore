@@ -38,7 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.aurora.store.R
 import com.aurora.store.compose.composable.AccountAvatar
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
+import com.aurora.store.compose.ui.tv.TvAccountPanel
+import com.aurora.store.compose.ui.tv.TvMenuEntry
 import com.aurora.store.viewmodel.commons.MoreViewModel
 
 private data class MoreItem(
@@ -74,6 +78,47 @@ fun MoreSheet(
         },
         MoreItem(R.string.title_about, R.drawable.ic_menu_about) { onNavigateTo(Destination.About) }
     )
+
+    if (LocalUI.current == UI.TV) {
+        val isAnonymous = viewModel.authProvider.isAnonymous
+        val profile = viewModel.authProvider.authData?.userProfile
+        fun go(destination: Destination) {
+            onNavigateTo(destination)
+            onDismiss()
+        }
+        TvAccountPanel(
+            avatarUrl = profile?.artwork?.url,
+            name = if (isAnonymous) {
+                stringResource(R.string.account_anonymous)
+            } else {
+                profile?.name ?: stringResource(R.string.status_unavailable)
+            },
+            email = profile?.email ?: stringResource(R.string.status_unavailable),
+            onManageAccounts = { go(Destination.Accounts) },
+            menu = (mainItems + extraItems).map { item ->
+                TvMenuEntry(
+                    label = stringResource(item.titleRes),
+                    iconRes = item.iconRes,
+                    onClick = {
+                        item.onClick()
+                        onDismiss()
+                    }
+                )
+            },
+            cards = listOf(
+                TvMenuEntry(
+                    label = stringResource(R.string.title_download_manager),
+                    onClick = { go(Destination.Downloads) }
+                ),
+                TvMenuEntry(
+                    label = stringResource(R.string.title_notifications),
+                    onClick = { go(Destination.Notifications) }
+                )
+            ),
+            onDismiss = onDismiss
+        )
+        return
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,

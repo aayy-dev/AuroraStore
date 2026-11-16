@@ -6,13 +6,23 @@
 package com.aurora.store.compose.ui.tv
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.BringIntoViewSpec
 import androidx.compose.foundation.gestures.LocalBringIntoViewSpec
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
+import com.aurora.store.compose.theme.TvDimens
 
 /**
  * Scrolls a lazy list so the focused item's leading edge sits [leading] from the list's start,
@@ -62,4 +72,24 @@ fun TvMinimalScroll(margin: Dp, content: @Composable () -> Unit) {
     val marginPx = with(LocalDensity.current) { margin.toPx() }
     val spec = remember(marginPx) { MinimalBringIntoViewSpec(marginPx) }
     CompositionLocalProvider(LocalBringIntoViewSpec provides spec, content = content)
+}
+
+/**
+ * On TV, keeps a phone-style screen's content away from the screen edges, as TV layouts expect.
+ * Elsewhere it shows [content] as is.
+ */
+@Composable
+fun TvInset(content: @Composable () -> Unit) {
+    if (LocalUI.current != UI.TV) {
+        content()
+        return
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = TvDimens.ScreenPaddingHorizontal - 24.dp)
+    ) {
+        content()
+    }
 }

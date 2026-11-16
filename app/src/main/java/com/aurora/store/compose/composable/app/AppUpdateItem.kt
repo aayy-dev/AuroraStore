@@ -27,6 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewWrapper
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.data.model.DownloadStatus
 import com.aurora.store.data.room.download.Download
@@ -57,48 +59,58 @@ fun AppUpdateItem(
         0f
     }
 
+    // On TV the row's info and its action button are separate focus targets, otherwise the
+    // remote can't reach a button inside a focusable row
+    val isTv = LocalUI.current == UI.TV
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .then(if (isTv) Modifier else Modifier.clickable(onClick = onClick))
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
                 vertical = dimensionResource(R.dimen.spacing_small)
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium))) {
-            AnimatedAppIcon(
-                modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
-                iconUrl = update.iconURL,
-                inProgress = inProgress,
-                progress = progress
-            )
-        }
-        Spacer(Modifier.width(dimensionResource(R.dimen.spacing_medium)))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = update.displayName,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = listOf(update.developerName, update.updatedOn)
-                    .filter { it.isNotBlank() }
-                    .joinToString("  •  "),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "${update.versionName}  •  ${CommonUtil.addSiPrefix(shownSize)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .then(if (isTv) Modifier.clickable(onClick = onClick) else Modifier),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium))) {
+                AnimatedAppIcon(
+                    modifier = Modifier.requiredSize(dimensionResource(R.dimen.icon_size_medium)),
+                    iconUrl = update.iconURL,
+                    inProgress = inProgress,
+                    progress = progress
+                )
+            }
+            Spacer(Modifier.width(dimensionResource(R.dimen.spacing_medium)))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = update.displayName,
+                    style = MaterialTheme.typography.bodyLarge,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = listOf(update.developerName, update.updatedOn)
+                        .filter { it.isNotBlank() }
+                        .joinToString("  •  "),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${update.versionName}  •  ${CommonUtil.addSiPrefix(shownSize)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
         Spacer(Modifier.width(dimensionResource(R.dimen.spacing_small)))
         when {
