@@ -33,8 +33,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SearchBarValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
+import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation.NavigableListDetailPaneScaffold
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.material3.rememberSearchBarState
@@ -74,10 +76,13 @@ import com.aurora.store.compose.composable.Placeholder
 import com.aurora.store.compose.composable.ScrollHint
 import com.aurora.store.compose.composable.SearchSuggestionListItem
 import com.aurora.store.compose.composable.app.LargeAppListItem
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.preview.AppPreviewProvider
 import com.aurora.store.compose.preview.ThemePreviewProvider
 import com.aurora.store.compose.ui.details.AppDetailsScreen
+import com.aurora.store.compose.ui.tv.TvSearch
 import com.aurora.store.data.model.SearchFilter
 import com.aurora.store.viewmodel.search.SearchViewModel
 import kotlin.random.Random
@@ -124,7 +129,14 @@ private fun ScreenContent(
     val searchBarState = rememberSearchBarState(initialValue = SearchBarValue.Expanded)
     var isSearching by rememberSaveable { mutableStateOf(false) }
 
-    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<String>()
+    // TV shows one page at a time: the results, then an app's details on top of them
+    val isTv = LocalUI.current == UI.TV
+    val scaffoldDirective = calculatePaneScaffoldDirective(currentWindowAdaptiveInfoV2()).let {
+        if (isTv) it.copy(maxHorizontalPartitions = 1) else it
+    }
+    val scaffoldNavigator = rememberListDetailPaneScaffoldNavigator<String>(
+        scaffoldDirective = scaffoldDirective
+    )
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = textFieldState) {
@@ -308,7 +320,30 @@ private fun ScreenContent(
 
     NavigableListDetailPaneScaffold(
         navigator = scaffoldNavigator,
-        listPane = { AnimatedPane { ListPane() } },
+        listPane = {
+            AnimatedPane {
+                if (isTv) {
+                    TvSearch(
+                        textFieldState = textFieldState,
+                        suggestions = suggestions,
+                        results = results,
+                        isSearching = isSearching,
+                        onSearch = { query -> onRequestSearch(query) },
+                        onAppClick = { app -> showDetailPane(app.packageName) },
+                        filters = {
+                            FilterHeader(
+                                isEnabled = isSearching &&
+                                    results.loadState.refresh is LoadState.NotLoading,
+                                isAnonymous = isAnonymous,
+                                onFilter = onFilter
+                            )
+                        }
+                    )
+                } else {
+                    ListPane()
+                }
+            }
+        },
         detailPane = { AnimatedPane { DetailPane() } }
     )
 }
