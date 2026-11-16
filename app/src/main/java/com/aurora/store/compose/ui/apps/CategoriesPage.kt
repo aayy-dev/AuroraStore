@@ -23,7 +23,10 @@ import com.aurora.store.R
 import com.aurora.store.compose.composable.CategoryItem
 import com.aurora.store.compose.composable.Placeholder
 import com.aurora.store.compose.composable.ShimmerCategoryRow
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvCategories
 import com.aurora.store.data.model.ViewState
 import com.aurora.store.viewmodel.category.CategoryViewModel
 
@@ -55,7 +58,11 @@ internal fun CategoriesContent(
     val categories = (state as? ViewState.Success<*>)?.data as? CategoryStash
     val list = categories?.get(categoryType)
 
-    CategoriesBody(list = list, onCategoryClick = onCategoryClick)
+    if (LocalUI.current == UI.TV) {
+        TvCategories(list = list, onCategoryClick = onCategoryClick)
+    } else {
+        CategoriesBody(list = list, onCategoryClick = onCategoryClick)
+    }
 }
 
 @Composable

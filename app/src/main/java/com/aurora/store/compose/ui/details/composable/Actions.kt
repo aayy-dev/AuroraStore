@@ -30,7 +30,10 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper
 import androidx.compose.ui.unit.sp
 import com.aurora.extensions.isWindowCompact
 import com.aurora.store.R
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.preview.ThemePreviewProvider
+import com.aurora.store.compose.ui.tv.TvButton
 
 /**
  * Composable to display primary and secondary actions available for the app, supposed to be used
@@ -53,6 +56,25 @@ fun Actions(
     onSecondaryAction: () -> Unit = {},
     windowAdaptiveInfo: WindowAdaptiveInfo = currentWindowAdaptiveInfoV2()
 ) {
+    if (LocalUI.current == UI.TV) {
+        // TV: primary action first (it gets focus), like the TV Play Store's Install pill
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium))
+        ) {
+            TvButton(
+                label = primaryActionDisplayName,
+                enabled = isPrimaryActionEnabled,
+                onClick = onPrimaryAction
+            )
+            TvButton(
+                label = secondaryActionDisplayName,
+                enabled = isSecondaryActionEnabled,
+                onClick = onSecondaryAction
+            )
+        }
+        return
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()

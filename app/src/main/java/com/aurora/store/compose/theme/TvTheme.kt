@@ -31,6 +31,9 @@ val TvSectionTitle = Color(0xFF919294) // sampled
  * background as the TV-specific ones.
  */
 val StoreTvColorScheme: ColorScheme = StoreDarkColorScheme.copy(
+    // The TV store is monochrome: light accents (stars, filled buttons, progress) on dark
+    primary = TvOnSurface,
+    onPrimary = TvOnFocusedSurface,
     background = TvBackground,
     surface = TvBackground,
     surfaceDim = TvBackground,
@@ -85,6 +88,9 @@ object TvDimens {
 
     /** Gap between cards in a row (44 px sampled). */
     val CardSpacing = 22.dp
+
+    /** Cards per grid row: five 150 dp cards and their gaps fit the 848 dp between margins. */
+    const val GRID_COLUMNS = 5
 
     /** Focused card scale (362 px focused vs 298 px, about 1.2x). */
     const val FOCUSED_CARD_SCALE = 1.2f

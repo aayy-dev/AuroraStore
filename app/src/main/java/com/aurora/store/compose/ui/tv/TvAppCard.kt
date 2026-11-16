@@ -6,10 +6,12 @@
 package com.aurora.store.compose.ui.tv
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,7 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme as M3Theme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,19 +36,27 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.Surface
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.aurora.gplayapi.model.App
+import com.aurora.store.R
 import com.aurora.store.compose.composable.app.AppIcon
 import com.aurora.store.compose.composable.app.hasRating
+import com.aurora.store.compose.theme.TvBackground
+import com.aurora.store.compose.theme.TvCard
 import com.aurora.store.compose.theme.TvCardHigh
 import com.aurora.store.compose.theme.TvDimens
+import com.aurora.store.compose.theme.TvFocusedSurface
+import com.aurora.store.compose.theme.TvOnFocusedSurface
 import com.aurora.store.compose.theme.TvOnSurface
 import com.aurora.store.compose.theme.TvOnSurfaceMuted
 
@@ -59,7 +71,7 @@ private val LabelHeight = 30.dp
  * the app name and rating underneath.
  */
 @Composable
-fun TvAppCard(app: App, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun TvAppCard(app: App, onClick: () -> Unit, modifier: Modifier = Modifier, badge: String? = null) {
     var focused by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.width(TvDimens.CardWidth)) {
@@ -84,6 +96,18 @@ fun TvAppCard(app: App, onClick: () -> Unit, modifier: Modifier = Modifier) {
             )
         ) {
             CardArt(app = app)
+            if (badge != null) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(6.dp)
+                        .background(TvBackground.copy(alpha = 0.8f), CircleShape)
+                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                    text = badge,
+                    style = M3Theme.typography.labelLarge,
+                    color = TvOnSurface
+                )
+            }
         }
 
         Box(
@@ -153,5 +177,48 @@ private fun CardArt(app: App) {
                 overflow = TextOverflow.Ellipsis
             )
         }
+    }
+}
+
+/**
+ * Last card of a row that opens the full list, sized like a [TvAppCard].
+ */
+@Composable
+fun TvMoreCard(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.width(TvDimens.CardWidth)) {
+        Surface(
+            modifier = Modifier.size(TvDimens.CardWidth, TvDimens.CardHeight),
+            onClick = onClick,
+            shape = ClickableSurfaceDefaults.shape(shape = CardShape),
+            colors = ClickableSurfaceDefaults.colors(
+                containerColor = TvCard,
+                contentColor = TvOnSurface,
+                focusedContainerColor = TvFocusedSurface,
+                focusedContentColor = TvOnFocusedSurface,
+                pressedContainerColor = TvFocusedSurface
+            ),
+            scale = ClickableSurfaceDefaults.scale(focusedScale = TvDimens.FOCUSED_CARD_SCALE)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.title_more),
+                    style = M3Theme.typography.titleSmall,
+                    color = LocalContentColor.current
+                )
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 6.dp)
+                        .size(20.dp),
+                    painter = painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = null,
+                    tint = LocalContentColor.current
+                )
+            }
+        }
+        Spacer(Modifier.height(LabelHeight))
     }
 }

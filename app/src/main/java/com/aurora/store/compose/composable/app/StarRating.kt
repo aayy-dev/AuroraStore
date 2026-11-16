@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
@@ -34,7 +35,13 @@ import kotlin.math.roundToInt
  * reviews on the Play Store. Read by accessibility services as "Rated x out of 5 stars".
  */
 @Composable
-fun StarRating(rating: Float, modifier: Modifier = Modifier, starSize: Dp = 14.dp) {
+fun StarRating(
+    rating: Float,
+    modifier: Modifier = Modifier,
+    starSize: Dp = 14.dp,
+    color: Color = MaterialTheme.colorScheme.primary,
+    emptyColor: Color = MaterialTheme.colorScheme.outline
+) {
     val safeRating = if (rating.isNaN()) 0f else rating.coerceIn(0f, 5f)
     val halfSteps = (safeRating * 2).roundToInt()
     val description = stringResource(
@@ -53,7 +60,7 @@ fun StarRating(rating: Float, modifier: Modifier = Modifier, starSize: Dp = 14.d
                     modifier = Modifier.size(starSize),
                     painter = painterResource(R.drawable.ic_star_filled),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.outline
+                    tint = emptyColor
                 )
                 if (fill > 0f) {
                     Icon(
@@ -73,7 +80,7 @@ fun StarRating(rating: Float, modifier: Modifier = Modifier, starSize: Dp = 14.d
                             },
                         painter = painterResource(R.drawable.ic_star_filled),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = color
                     )
                 }
             }
