@@ -53,6 +53,9 @@ class BlacklistViewModel @Inject constructor(
 
     private val isAuroraOnlyFilterEnabled =
         Preferences.getBoolean(context, Preferences.PREFERENCE_FILTER_AURORA_ONLY, false)
+
+    // Probes every installer, so look it up once for the whole list
+    private val auroraInstallers by lazy { CertUtil.auroraInstallers(context) }
     private val isFDroidFilterEnabled =
         Preferences.getBoolean(context, Preferences.PREFERENCE_FILTER_FDROID, true)
     private val isExtendedUpdateEnabled =
@@ -142,7 +145,8 @@ class BlacklistViewModel @Inject constructor(
 
         isAuroraOnlyFilterEnabled -> !CertUtil.isAuroraStoreApp(
             context,
-            packageInfo.packageName
+            packageInfo.packageName,
+            auroraInstallers
         )
 
         isFDroidFilterEnabled -> CertUtil.isFDroidApp(context, packageInfo.packageName)
