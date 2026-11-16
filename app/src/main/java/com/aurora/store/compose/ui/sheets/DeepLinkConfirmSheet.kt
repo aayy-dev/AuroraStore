@@ -19,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -31,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.aurora.store.R
+import com.aurora.store.compose.composable.StoreSheet
 
 /**
  * Play Store-style bottom sheet shown before opening an app/developer listing from an external
@@ -49,7 +49,7 @@ fun DeepLinkConfirmSheet(
     onOpen: () -> Unit,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {

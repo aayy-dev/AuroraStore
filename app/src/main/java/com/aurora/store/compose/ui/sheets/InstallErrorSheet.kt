@@ -19,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -38,6 +37,7 @@ import com.aurora.extensions.copyToClipBoard
 import com.aurora.extensions.toast
 import com.aurora.gplayapi.model.App
 import com.aurora.store.R
+import com.aurora.store.compose.composable.StoreSheet
 import com.aurora.store.compose.theme.AppIconShape
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +56,7 @@ fun InstallErrorSheet(
     // always one that hasn't been purchased yet; offer a shortcut to buy it on the Play Store.
     val canBuy = !app.isFree && !isAnonymous
 
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {

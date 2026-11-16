@@ -20,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -33,6 +32,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import com.aurora.store.R
+import com.aurora.store.compose.composable.StoreSheet
 import com.aurora.store.compose.composable.app.AnimatedAppIcon
 import com.aurora.store.data.room.download.Download
 import com.aurora.store.util.PackageUtil
@@ -53,7 +53,7 @@ fun DownloadActionsSheet(
     val canInstall = download.canInstall(context)
     val canExport = PathUtil.getExportableFiles(context, download).isNotEmpty()
 
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {

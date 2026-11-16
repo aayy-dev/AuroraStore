@@ -27,7 +27,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -57,6 +56,7 @@ import com.aurora.extensions.openPlayStore
 import com.aurora.extensions.toast
 import com.aurora.store.AuroraApp
 import com.aurora.store.R
+import com.aurora.store.compose.composable.StoreSheet
 import com.aurora.store.compose.composable.VersionChangeText
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.theme.AppIconShape
@@ -83,7 +83,7 @@ fun AppUpdateSheet(
         PackageUtil.isInstalled(context, Constants.PACKAGE_NAME_PLAY_STORE)
     }
 
-    ModalBottomSheet(
+    StoreSheet(
         onDismissRequest = onDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ) {
