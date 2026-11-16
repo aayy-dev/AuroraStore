@@ -27,10 +27,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,11 +52,15 @@ import com.aurora.store.compose.composable.InsufficientStorageDialog
 import com.aurora.store.compose.composable.PermissionUpdateWarningDialog
 import com.aurora.store.compose.composable.TrackerUpdateWarningDialog
 import com.aurora.store.compose.composition.LocalNetworkStatus
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
 import com.aurora.store.compose.ui.apps.AppsGamesScreen
 import com.aurora.store.compose.ui.commons.MoreSheet
 import com.aurora.store.compose.ui.commons.NetworkScreen
 import com.aurora.store.compose.ui.sheets.AppUpdateSheet
+import com.aurora.store.compose.ui.tv.TvMainShell
+import com.aurora.store.compose.ui.tv.TvTopBarItem
 import com.aurora.store.compose.ui.updates.UpdatesScreen
 import com.aurora.store.data.model.ExodusTracker
 import com.aurora.store.data.model.NetworkStatus
@@ -129,6 +136,10 @@ fun MainScreen(
         )
     ) {
         MainTab.entries.size
+    }
+
+    var tvTab by rememberSaveable {
+        mutableIntStateOf(initialTab.coerceIn(0, MainTab.entries.size - 1))
     }
 
     var showMoreSheet by remember { mutableStateOf(false) }
@@ -223,137 +234,189 @@ fun MainScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            HomeTopBar(
-                avatarUrl = moreViewModel.authProvider.authData?.userProfile?.artwork?.url,
-                notificationCount = notificationCount,
-                onNotificationsClick = { onNavigateTo(Destination.Notifications) },
-                onDownloadsClick = { onNavigateTo(Destination.Downloads) },
-                onAvatarClick = { showMoreSheet = true }
+    val pageContent: @Composable (MainTab) -> Unit = { tab ->
+        when (tab) {
+            MainTab.APPS -> AppsGamesScreen(
+                pageType = 0,
+                onNavigateTo = onNavigateTo
             )
-        },
-        bottomBar = {
-            NavigationBar {
-                navEntries.forEach { entry ->
-                    when (entry) {
-                        is NavEntry.Page -> {
-                            val tab = entry.tab
-                            val selected = pagerState.currentPage == tab.ordinal
-                            NavigationBarItem(
-                                selected = selected,
-                                onClick = {
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(tab.ordinal)
-                                    }
-                                },
-                                icon = {
-                                    val icon = painterResource(
-                                        if (selected) tab.selectedIconRes else tab.iconRes
+            MainTab.GAMES -> AppsGamesScreen(
+                pageType = 1,
+                onNavigateTo = ::handleNavigation
+            )
+            MainTab.UPDATES -> {
+                UpdatesScreen(
+                    viewModel = updatesViewModel,
+                    onNavigateTo = ::handleNavigation,
+                    onRequestUpdate = { update ->
+                        if (warnPermissions && update.newPermissions.isNotEmpty()) {
+                            permissionWarning = update
+                        } else {
+                            checkTrackersThenUpdate(update)
+                        }
+                    },
+                    onRequestUpdateAll = { selectedUpdates ->
+                        val needsObb = selectedUpdates.any {
+                            it.fileList.requiresObbDir()
+                        }
+                        if (needsObb &&
+                            !isGranted(context, PermissionType.STORAGE_MANAGER)
+                        ) {
+                            onNavigateTo(
+                                Destination.PermissionRationale(
+                                    setOf(PermissionType.STORAGE_MANAGER)
+                                )
+                            )
+                        } else {
+                            val (heldBack, toUpdate) = selectedUpdates.partition {
+                                warnPermissions && it.newPermissions.isNotEmpty()
+                            }
+                            if (heldBack.isNotEmpty()) {
+                                context.toast(
+                                    resources.getQuantityString(
+                                        R.plurals.updates_skipped_new_permissions,
+                                        heldBack.size,
+                                        heldBack.size
                                     )
-                                    if (tab == MainTab.UPDATES && updateCount > 0) {
-                                        BadgedBox(badge = { Badge { Text("$updateCount") } }) {
+                                )
+                            }
+                            updatesViewModel.downloadAll(toUpdate)
+                        }
+                    },
+                    onCancelUpdate = { packageName ->
+                        if (downloads.any {
+                                it.packageName == packageName && !it.isFinished
+                            }
+                        ) {
+                            checkingJobs.remove(packageName)
+                            updatesViewModel.cancelDownload(packageName)
+                        } else {
+                            checkingJobs.remove(packageName)?.cancel()
+                        }
+                    },
+                    onCancelAll = { updatesViewModel.cancelAll() },
+                    checkingPackages = checkingJobs.keys
+                )
+            }
+        }
+    }
+
+    if (LocalUI.current == UI.TV) {
+        val saveableStateHolder = rememberSaveableStateHolder()
+        TvMainShell(
+            items = listOf(
+                TvTopBarItem.Action(
+                    labelRes = R.string.action_search,
+                    iconRes = R.drawable.ic_round_search,
+                    showLabel = true,
+                    onClick = { onNavigateTo(Destination.Search) }
+                ),
+                TvTopBarItem.Section(
+                    index = MainTab.APPS.ordinal,
+                    labelRes = MainTab.APPS.labelRes,
+                    iconRes = MainTab.APPS.iconRes
+                ),
+                TvTopBarItem.Section(
+                    index = MainTab.GAMES.ordinal,
+                    labelRes = MainTab.GAMES.labelRes,
+                    iconRes = MainTab.GAMES.iconRes
+                ),
+                TvTopBarItem.Section(
+                    index = MainTab.UPDATES.ordinal,
+                    labelRes = MainTab.UPDATES.labelRes,
+                    iconRes = MainTab.UPDATES.iconRes,
+                    badgeCount = updateCount
+                ),
+                TvTopBarItem.Action(
+                    labelRes = R.string.title_notifications,
+                    iconRes = R.drawable.ic_notifications,
+                    badgeCount = notificationCount,
+                    onClick = { onNavigateTo(Destination.Notifications) }
+                ),
+                TvTopBarItem.Action(
+                    labelRes = R.string.title_download_manager,
+                    iconRes = R.drawable.ic_download_manager,
+                    onClick = { onNavigateTo(Destination.Downloads) }
+                )
+            ),
+            selectedIndex = tvTab,
+            onSelect = { tvTab = it },
+            avatarUrl = moreViewModel.authProvider.authData?.userProfile?.artwork?.url,
+            onAvatarClick = { showMoreSheet = true }
+        ) {
+            val tab = MainTab.entries[tvTab]
+            saveableStateHolder.SaveableStateProvider(tab.name) { pageContent(tab) }
+        }
+    } else {
+        Scaffold(
+            topBar = {
+                HomeTopBar(
+                    avatarUrl = moreViewModel.authProvider.authData?.userProfile?.artwork?.url,
+                    notificationCount = notificationCount,
+                    onNotificationsClick = { onNavigateTo(Destination.Notifications) },
+                    onDownloadsClick = { onNavigateTo(Destination.Downloads) },
+                    onAvatarClick = { showMoreSheet = true }
+                )
+            },
+            bottomBar = {
+                NavigationBar {
+                    navEntries.forEach { entry ->
+                        when (entry) {
+                            is NavEntry.Page -> {
+                                val tab = entry.tab
+                                val selected = pagerState.currentPage == tab.ordinal
+                                NavigationBarItem(
+                                    selected = selected,
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(tab.ordinal)
+                                        }
+                                    },
+                                    icon = {
+                                        val icon = painterResource(
+                                            if (selected) tab.selectedIconRes else tab.iconRes
+                                        )
+                                        if (tab == MainTab.UPDATES && updateCount > 0) {
+                                            BadgedBox(badge = { Badge { Text("$updateCount") } }) {
+                                                Icon(painter = icon, contentDescription = null)
+                                            }
+                                        } else {
                                             Icon(painter = icon, contentDescription = null)
                                         }
-                                    } else {
-                                        Icon(painter = icon, contentDescription = null)
-                                    }
+                                    },
+                                    label = { Text(stringResource(tab.labelRes)) }
+                                )
+                            }
+
+                            NavEntry.Search -> NavigationBarItem(
+                                selected = false,
+                                onClick = { onNavigateTo(Destination.Search) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_round_search),
+                                        contentDescription = null
+                                    )
                                 },
-                                label = { Text(stringResource(tab.labelRes)) }
+                                label = { Text(stringResource(R.string.action_search)) }
                             )
                         }
-
-                        NavEntry.Search -> NavigationBarItem(
-                            selected = false,
-                            onClick = { onNavigateTo(Destination.Search) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_round_search),
-                                    contentDescription = null
-                                )
-                            },
-                            label = { Text(stringResource(R.string.action_search)) }
-                        )
                     }
                 }
             }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .consumeWindowInsets(paddingValues)
-                .fillMaxSize()
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                beyondViewportPageCount = MainTab.entries.size - 1,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                when (MainTab.entries[page]) {
-                    MainTab.APPS -> AppsGamesScreen(
-                        pageType = 0,
-                        onNavigateTo = onNavigateTo
-                    )
-                    MainTab.GAMES -> AppsGamesScreen(
-                        pageType = 1,
-                        onNavigateTo = ::handleNavigation
-                    )
-                    MainTab.UPDATES -> {
-                        UpdatesScreen(
-                            viewModel = updatesViewModel,
-                            onNavigateTo = ::handleNavigation,
-                            onRequestUpdate = { update ->
-                                if (warnPermissions && update.newPermissions.isNotEmpty()) {
-                                    permissionWarning = update
-                                } else {
-                                    checkTrackersThenUpdate(update)
-                                }
-                            },
-                            onRequestUpdateAll = { selectedUpdates ->
-                                val needsObb = selectedUpdates.any {
-                                    it.fileList.requiresObbDir()
-                                }
-                                if (needsObb &&
-                                    !isGranted(context, PermissionType.STORAGE_MANAGER)
-                                ) {
-                                    onNavigateTo(
-                                        Destination.PermissionRationale(
-                                            setOf(PermissionType.STORAGE_MANAGER)
-                                        )
-                                    )
-                                } else {
-                                    val (heldBack, toUpdate) = selectedUpdates.partition {
-                                        warnPermissions && it.newPermissions.isNotEmpty()
-                                    }
-                                    if (heldBack.isNotEmpty()) {
-                                        context.toast(
-                                            resources.getQuantityString(
-                                                R.plurals.updates_skipped_new_permissions,
-                                                heldBack.size,
-                                                heldBack.size
-                                            )
-                                        )
-                                    }
-                                    updatesViewModel.downloadAll(toUpdate)
-                                }
-                            },
-                            onCancelUpdate = { packageName ->
-                                if (downloads.any {
-                                        it.packageName == packageName && !it.isFinished
-                                    }
-                                ) {
-                                    checkingJobs.remove(packageName)
-                                    updatesViewModel.cancelDownload(packageName)
-                                } else {
-                                    checkingJobs.remove(packageName)?.cancel()
-                                }
-                            },
-                            onCancelAll = { updatesViewModel.cancelAll() },
-                            checkingPackages = checkingJobs.keys
-                        )
-                    }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .consumeWindowInsets(paddingValues)
+                    .fillMaxSize()
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                    beyondViewportPageCount = MainTab.entries.size - 1,
+                    modifier = Modifier.fillMaxSize()
+                ) { page ->
+                    pageContent(MainTab.entries[page])
                 }
             }
         }

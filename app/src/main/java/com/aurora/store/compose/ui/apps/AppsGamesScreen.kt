@@ -9,6 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,18 +20,29 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.aurora.gplayapi.api.TopChartType
 import com.aurora.gplayapi.model.ContentType
 import com.aurora.store.R
 import com.aurora.store.compose.composable.StoreChip
+import com.aurora.store.compose.composition.LocalUI
+import com.aurora.store.compose.composition.UI
 import com.aurora.store.compose.navigation.Destination
+import com.aurora.store.compose.theme.TvDimens
+import com.aurora.store.compose.ui.tv.TvChip
 import com.aurora.store.util.Preferences
 import com.aurora.store.viewmodel.category.CategoryViewModel
 import com.aurora.store.viewmodel.homestream.StreamViewModel
@@ -66,6 +78,18 @@ fun AppsGamesScreen(
         add(AppsTab.TOP_CHARTS)
         add(AppsTab.CATEGORIES)
     }
+    if (LocalUI.current == UI.TV) {
+        TvAppsGamesContent(
+            pageType = pageType,
+            tabs = tabs,
+            streamViewModel = streamViewModel,
+            topChartViewModel = topChartViewModel,
+            categoryViewModel = categoryViewModel,
+            onNavigateTo = onNavigateTo
+        )
+        return
+    }
+
     val pagerState = rememberPagerState { tabs.size }
     val coroutineScope = rememberCoroutineScope()
 
@@ -125,6 +149,70 @@ fun AppsGamesScreen(
                     viewModel = categoryViewModel,
                     onCategoryClick = { onNavigateTo(Destination.CategoryBrowse(it)) }
                 )
+            }
+        }
+    }
+}
+
+/**
+ * TV layout of the Apps and Games pages: a row of pills for the sub-pages (For you, Top charts,
+ * Categories) above the selected page.
+ */
+@Composable
+private fun TvAppsGamesContent(
+    pageType: Int,
+    tabs: List<AppsTab>,
+    streamViewModel: StreamViewModel,
+    topChartViewModel: TopChartViewModel,
+    categoryViewModel: CategoryViewModel,
+    onNavigateTo: (Destination) -> Unit
+) {
+    var selected by rememberSaveable { mutableIntStateOf(0) }
+    val tab = tabs[selected.coerceIn(0, tabs.size - 1)]
+    val saveableStateHolder = rememberSaveableStateHolder()
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRestorer()
+                .padding(horizontal = TvDimens.ScreenPaddingHorizontal - 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_small))
+        ) {
+            tabs.forEachIndexed { index, item ->
+                TvChip(
+                    label = stringResource(item.titleRes),
+                    selected = index == selected,
+                    onClick = { selected = index }
+                )
+            }
+        }
+
+        Box(modifier = Modifier.fillMaxWidth().weight(1f)) {
+            saveableStateHolder.SaveableStateProvider(tab.name) {
+                when (tab) {
+                    AppsTab.FOR_YOU -> TvForYouContent(
+                        pageType = pageType,
+                        viewModel = streamViewModel,
+                        onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) },
+                        onClusterScrolled = { cluster ->
+                            streamViewModel.observeCluster(category(pageType), cluster)
+                        },
+                        onScrolledToEnd = { streamViewModel.observe(category(pageType)) }
+                    )
+
+                    AppsTab.TOP_CHARTS -> TopChartsContent(
+                        pageType = pageType,
+                        viewModel = topChartViewModel,
+                        onAppClick = { onNavigateTo(Destination.AppDetails(it.packageName)) }
+                    )
+
+                    AppsTab.CATEGORIES -> CategoriesContent(
+                        pageType = pageType,
+                        viewModel = categoryViewModel,
+                        onCategoryClick = { onNavigateTo(Destination.CategoryBrowse(it)) }
+                    )
+                }
             }
         }
     }
