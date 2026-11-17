@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.aurora.store.R
 import com.aurora.store.compose.composable.StoreSheet
-import com.aurora.store.data.model.Report
+import com.aurora.store.data.model.VersionEntry
 import com.aurora.store.data.model.formatExodusDate
 
 /**

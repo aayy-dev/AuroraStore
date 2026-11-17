@@ -53,17 +53,30 @@ fun AuroraListItem(
 ) {
     // On TV a row's own click target and the controls in its trailing slot must be separate
     // focus targets, or the remote can't reach the controls
-    val splitTarget = LocalUI.current == UI.TV && onClick != null && trailing != null
-    val clickModifier = if (onClick != null) {
-        Modifier.clickable(enabled = enabled, onClick = onClick)
-    } else {
-        Modifier
+    val clickable = onClick != null || onLongClick != null
+    val splitTarget = LocalUI.current == UI.TV && clickable && trailing != null
+    val clickModifier = when {
+        onLongClick != null -> Modifier.combinedClickable(
+            enabled = enabled,
+            onClick = { onClick?.invoke() },
+            onLongClick = onLongClick
+        )
+
+        onClick != null -> Modifier.clickable(enabled = enabled, onClick = onClick)
+        else -> Modifier
     }
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .then(if (splitTarget) Modifier else clickModifier)
+            .then(
+                if (selected) {
+                    Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                } else {
+                    Modifier
+                }
+            )
             .padding(
                 horizontal = dimensionResource(R.dimen.spacing_medium),
                 vertical = verticalPadding
