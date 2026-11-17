@@ -98,12 +98,18 @@ private fun rememberFocusMemory(size: Int): IntArray = rememberSaveable(
 
 /**
  * Calls [onReachedEnd] whenever the user scrolls within [threshold] items of the end of a laid out
- * list, but never for an empty or not yet measured one.
+ * list, but never for an empty or not yet measured one. A change of [dataKey] (e.g. how many items
+ * were loaded) checks again, so a page that adds nothing visible doesn't stall loading.
  */
 @Composable
-private fun LoadMoreEffect(state: LazyListState, threshold: Int, onReachedEnd: () -> Unit) {
+private fun LoadMoreEffect(
+    state: LazyListState,
+    threshold: Int,
+    dataKey: Any?,
+    onReachedEnd: () -> Unit
+) {
     val callback by rememberUpdatedState(onReachedEnd)
-    LaunchedEffect(state) {
+    LaunchedEffect(state, dataKey) {
         snapshotFlow {
             val info = state.layoutInfo
             val last = info.visibleItemsInfo.lastOrNull()?.index ?: return@snapshotFlow false
@@ -173,7 +179,7 @@ fun TvStreamRows(
         return
     }
 
-    LoadMoreEffect(listState, LOAD_MORE_THRESHOLD) {
+    LoadMoreEffect(listState, LOAD_MORE_THRESHOLD, streamBundle.clusters.size) {
         if (streamBundle.hasNext()) onScrolledToEnd()
     }
 
@@ -236,7 +242,7 @@ fun TvAppRow(
     onCardFocused: (Int) -> Unit = {}
 ) {
     val rowState = rememberLazyListState()
-    LoadMoreEffect(rowState, LOAD_MORE_THRESHOLD) { if (hasMore) onLoadMore() }
+    LoadMoreEffect(rowState, LOAD_MORE_THRESHOLD, apps.size) { if (hasMore) onLoadMore() }
 
     Column(modifier = modifier) {
         TvSectionTitle(title = title, isFeatured = isFeatured)
@@ -324,7 +330,7 @@ fun TvAppGrid(
 ) {
     val gridState = rememberLazyGridState()
     val distinctApps = remember(apps) { apps.distinctBy { it.packageName } }
-    GridLoadMoreEffect(gridState) { if (hasMore) onLoadMore() }
+    GridLoadMoreEffect(gridState, apps.size) { if (hasMore) onLoadMore() }
 
     // Focus the last focused card (the first one on a fresh start)
     val focusMemory = rememberFocusMemory(1)
@@ -377,9 +383,9 @@ fun TvAppGrid(
  * Grid counterpart of [LoadMoreEffect].
  */
 @Composable
-internal fun GridLoadMoreEffect(state: LazyGridState, onReachedEnd: () -> Unit) {
+internal fun GridLoadMoreEffect(state: LazyGridState, dataKey: Any?, onReachedEnd: () -> Unit) {
     val callback by rememberUpdatedState(onReachedEnd)
-    LaunchedEffect(state) {
+    LaunchedEffect(state, dataKey) {
         snapshotFlow {
             val info = state.layoutInfo
             val last = info.visibleItemsInfo.lastOrNull()?.index ?: return@snapshotFlow false

@@ -24,11 +24,14 @@ import com.aurora.extensions.setAppTheme
 import com.aurora.store.data.event.EventFlow
 import com.aurora.store.data.helper.DownloadHelper
 import com.aurora.store.data.helper.UpdateHelper
+import com.aurora.store.data.installer.AppInstaller
+import com.aurora.store.data.model.Installer
 import com.aurora.store.data.receiver.PackageManagerReceiver
 import com.aurora.store.util.CommonUtil
 import com.aurora.store.util.NotificationUtil
 import com.aurora.store.util.PackageUtil
 import com.aurora.store.util.Preferences
+import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import kotlinx.coroutines.MainScope
@@ -97,6 +100,13 @@ class AuroraApp : Application(), Configuration.Provider, SingletonImageLoader.Fa
         )
 
         CommonUtil.cleanupInstallationSessions(applicationContext)
+
+        // With the root installer, open the root shell in the background now: until a shell
+        // exists libsu can't tell whether root was granted, and the install permission check
+        // would ask for a permission the root installer doesn't use
+        if (AppInstaller.getCurrentInstaller(this) == Installer.ROOT) {
+            Shell.getShell { }
+        }
     }
 
     private val foregroundTracker = object : ActivityLifecycleCallbacks {

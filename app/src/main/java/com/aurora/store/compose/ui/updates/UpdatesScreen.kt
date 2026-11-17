@@ -95,6 +95,8 @@ fun UpdatesScreen(
     val mainAnyActive = mainEntries.any { it.value.isActive() }
     val approvalAnyActive = approvalEntries.any { it.value.isActive() }
 
+    val isTv = LocalUI.current == UI.TV
+
     val content: @Composable BoxScope.() -> Unit = {
         when {
             updateMap == null -> {
@@ -124,6 +126,25 @@ fun UpdatesScreen(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    // On TV the refresh button sits in the main section's header; without
+                    // that section it still needs a home, since there's no pull to refresh
+                    if (isTv && mainEntries.isEmpty()) {
+                        item(key = "tv_refresh") {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp, end = 12.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                TvButton(
+                                    iconRes = R.drawable.ic_refresh,
+                                    contentDescription = stringResource(R.string.check_updates),
+                                    onClick = { viewModel.fetchUpdates() }
+                                )
+                            }
+                        }
+                    }
+
                     if (selfEntries.isNotEmpty()) {
                         item(key = "header_self") {
                             SectionHeader(

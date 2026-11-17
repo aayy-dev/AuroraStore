@@ -957,6 +957,7 @@ private fun ScreenContentApp(
                         PlayListing(
                             app = app,
                             categoryIconUrl = categoryIconUrl,
+                            isTopChartLoading = isTopChartLoading,
                             onCategoryClick = { onNavigateTo(Destination.CategoryBrowse(it)) },
                             onTopChartClick = ::onTopChartClick,
                             onBrowse = { title, browseUrl ->

@@ -80,6 +80,14 @@ class SearchViewModel @Inject constructor(
         savedStateHandle[KEY_FILTER] = filter
     }
 
+    /**
+     * Runs [query] unless it is already the saved one, which [init] has re-run after a restore.
+     * For screens that search on their own when they open, so a restore doesn't search twice.
+     */
+    fun searchIfNeeded(query: String) {
+        if (savedStateHandle.get<String>(KEY_QUERY) != query) search(query)
+    }
+
     fun search(query: String) {
         savedStateHandle[KEY_QUERY] = query
         var cursor: BundleCursor? = null
