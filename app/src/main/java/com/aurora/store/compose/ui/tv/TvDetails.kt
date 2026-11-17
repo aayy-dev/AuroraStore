@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,7 @@ import com.aurora.gplayapi.model.App
 import com.aurora.gplayapi.model.Artwork
 import com.aurora.gplayapi.model.Rating
 import com.aurora.gplayapi.model.Review
+import com.aurora.store.R
 import com.aurora.store.compose.composable.app.AppIcon
 import com.aurora.store.compose.composable.app.StarRating
 import com.aurora.store.compose.composable.app.hasRating
@@ -200,6 +202,7 @@ fun TvScreenshotsRow(
                 horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing)
             ) {
                 itemsIndexed(screenshots) { index, artwork ->
+                    val screenshotLabel = stringResource(R.string.details_screenshots)
                     val ratio = if (artwork.width > 0 && artwork.height > 0) {
                         artwork.width.toFloat() / artwork.height
                     } else {
@@ -216,7 +219,7 @@ fun TvScreenshotsRow(
                                 .data(artwork.url)
                                 .crossfade(true)
                                 .build(),
-                            contentDescription = null,
+                            contentDescription = "$screenshotLabel ${index + 1}",
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -268,7 +271,7 @@ fun TvRatingsRow(
                         }
                     }
                 }
-                items(reviews, key = { it.commentId.ifBlank { it.userName + it.timeStamp } }) {
+                items(reviews) {
                     TvTile(width = 300.dp, height = 150.dp, onClick = onOpenReviews) {
                         ReviewTile(review = it)
                     }
@@ -425,7 +428,7 @@ fun TvInfoRow(title: String, items: List<TvInfo>, modifier: Modifier = Modifier)
                 ),
                 horizontalArrangement = Arrangement.spacedBy(TvDimens.CardSpacing)
             ) {
-                items(items, key = { it.title }) { info ->
+                items(items) { info ->
                     TvTile(width = 240.dp, height = 104.dp, onClick = info.onClick) {
                         Column(
                             modifier = Modifier
