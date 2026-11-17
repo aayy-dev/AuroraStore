@@ -29,12 +29,13 @@ As per Google Play's Terms Of Service §4 and §2:
 
 You are to hold yourself responsible by installing **Aurora Store** from other sources other than our own, in which you do not blame us for malicious programs, device bricking or anything else.
 
+> **Note from the fork:** this copy belongs to an unofficial fork at https://github.com/aayy-dev/AuroraStore, which is not affiliated with AuroraOSS. Builds from its [releases](https://github.com/aayy-dev/AuroraStore/releases) are not an official AuroraOSS source, and "we" below means AuroraOSS.
+
 The following sources are the only official links we provide:
 
 - **F-Droid:** https://f-droid.org/packages/com.aurora.store/
 - **AuroraOSS Website:** https://auroraoss.com/downloads.php
 - **Official Telegram Channel:** https://t.me/AuroraOfficial
-- **GitHub (this fork):** https://github.com/aayy-dev/AuroraStore/releases
 
 ### 3. Links in Aurora Store
 

@@ -62,7 +62,7 @@ All accounts being used within **Aurora Store** are saved onto the device as AAS
 - GL.Extensions
 - GL.Version
 
-### PlayStore (if installed, otherwise whaterver works, see [here](https://github.com/aayy-dev/AuroraStore/blob/46852a7b8011c5ac7e5a1ec8d8184d4915405fc5/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt#L86-L87))
+### PlayStore (if installed, otherwise whaterver works, see [here](https://github.com/aayy-dev/AuroraStore/blob/46852a7b8011c5ac7e5a1ec8d8184d4915405fc5/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt#L84-L87))
 - GSF.version
 - Vending.version
 - Vending.versionString
