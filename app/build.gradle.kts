@@ -66,7 +66,7 @@ configure<ApplicationExtension> {
         }
 
         versionCode = 76
-        versionName = "4.8.4"
+        versionName = "4.8.4-1"
 
         testInstrumentationRunner = "com.aurora.store.HiltInstrumentationTestRunner"
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"

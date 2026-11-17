@@ -47,6 +47,9 @@ object PackageUtil {
 
     private const val TAG = "PackageUtil"
 
+    /** Builds of this fork, signed with a different key than upstream's releases. */
+    private const val FORK_BUILD = true
+
     private val PLAY_LINK_OWNERS = setOf(PACKAGE_NAME_PLAY_STORE, "com.google.android.play.games")
 
     private const val VERSION_CODE_MICRO_G: Long = 240913402
@@ -192,6 +195,9 @@ object PackageUtil {
      * flavor check. The user-facing toggle gates this further at runtime.
      */
     fun isSelfUpdateSupported(context: Context): Boolean {
+        // This fork is signed with its own key, so upstream's release feed can never install
+        // over it (same as F-Droid builds below). Updates come from the fork's own releases.
+        if (FORK_BUILD) return false
         val flavorEligible = BuildConfig.FLAVOR == FLAVOUR_VANILLA ||
             BuildConfig.FLAVOR == FLAVOUR_PRELOAD
         return flavorEligible &&
