@@ -1,5 +1,7 @@
 # Aurora Store
 
+> **This is a fork** of [Aurora Store](https://auroraoss.com/) by AuroraOSS. It gives the phone UI a Play Store-style look, adds a Compose for TV interface for Android TV / Google TV, and includes a few bug fixes. Everything else works the same as upstream Aurora Store. It is not affiliated with AuroraOSS, so please report problems with this fork [here](https://github.com/aayy-dev/AuroraStore/issues), not to the upstream project.
+
 Aurora Store enables you to search and download apps from the official Google Play store. You can check app descriptions, screenshots, updates, reviews, and download the APK directly from Google Play to your device. 
 
 To use Aurora Store, log in using Google Play account, when you first open and configure Aurora Store.
@@ -10,8 +12,6 @@ Aurora Store works exactly like a door or a browser, allowing you to log in to y
 
 *_Please note that Aurora Store does not have any approval, sponsorship or authorization from Google, Google Play, any apps downloaded through Aurora Store or any app developers; neither does Aurora Store have any affiliation, cooperation or connection with them._*
 
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="90">](https://f-droid.org/packages/com.aurora.store/)
-[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png" alt="Get it on IzzyOnDroid" height="90">](https://apt.izzysoft.de/fdroid/index/apk/com.aurora.store)
 
 ## Features
 
@@ -66,25 +66,24 @@ Aurora Store is developed with the help of AI tooling. Here is what that means.
 
 ## Downloads
 
-Please only download the latest stable releases from one of these sources:
+Get this fork from [GitHub Releases](https://github.com/aayy-dev/AuroraStore/releases). Each release has:
 
-- [Official website](https://auroraoss.com/)
-- [GitLab Releases](https://gitlab.com/AuroraOSS/AuroraStore/-/releases)
-- [IzzyOnDroid](https://apt.izzysoft.de/fdroid/index/apk/com.aurora.store) (reproducible)
-- [F-Droid](https://f-droid.org/packages/com.aurora.store/) (signed by F-Droid, [more details](https://f-droid.org/docs/Signing_Process/))
-- [App Gallery](https://appgallery.huawei.com/app/C110907863) (limited to certain countries)
+- a **release** APK (`com.aurora.store`), signed with this fork's own key, and
+- a **debug** APK (`com.aurora.store.debug`), signed with the AOSP test key, which installs alongside any other build.
 
-You can also get latest debug builds signed with AOSP test keys for testing latest changes from our [GitLab Package Registry](https://gitlab.com/AuroraOSS/AuroraStore/-/packages/24103616).
+Because the release APK is signed with a different key, it can't be installed over upstream builds (official website, F-Droid, IzzyOnDroid, App Gallery), and they can't update it. Uninstall upstream Aurora Store first. Self-update is turned off in this fork for the same reason.
 
 ## Certificate Fingerprints
 
-- SHA1: 94:42:75:D7:59:8B:C0:3E:48:85:06:06:42:25:A7:19:90:A2:22:02
-- SHA256: 4C:62:61:57:AD:02:BD:A3:40:1A:72:63:55:5F:68:A7:96:63:FC:3E:13:A4:D4:36:9A:12:57:09:41:AA:28:0F
+Release builds of this fork:
+
+- SHA1: 43:83:8A:E7:B1:B8:D4:FD:B7:A5:D8:20:E0:48:3D:80:20:27:9B:61
+- SHA256: C6:10:B7:27:08:EA:31:96:6C:63:2F:86:73:99:5B:EB:BA:1D:E0:78:BA:46:C9:9A:44:6F:69:BD:11:21:60:E0
 
 ## Support
 
-Aurora Store v4 is still in on-going development! Bugs are to be expected! Any bug reports are appreciated.
-Please visit [Aurora Wiki](https://gitlab.com/AuroraOSS/AuroraStore/-/wikis/home) for FAQs.
+For problems with this fork, open an issue on [GitHub](https://github.com/aayy-dev/AuroraStore/issues).
+For general Aurora Store questions, visit [Aurora Wiki](https://gitlab.com/AuroraOSS/AuroraStore/-/wikis/home) for FAQs.
 
 - [Telegram](https://t.me/AuroraSupport)
 - [XDA Developers](https://forum.xda-developers.com/t/app-5-0-aurora-store-open-source-google-play-client.3739733/)

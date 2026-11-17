@@ -128,8 +128,6 @@
     <string name="about_paypal">PayPal</string>
     <string name="about_libera_summary">Diventa sostenitore su Liberapay</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab_summary">Ottieni il codice sorgente di Aurora Store da Aurora OSS su GitLab.</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid_summary">Ottieni Aurora Store tramite F-Droid.</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_eth_summary">Dona via Ethereum (ETH)</string>

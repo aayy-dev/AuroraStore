@@ -25,7 +25,6 @@
     <string name="pref_install_mode_title">Métodu d\'instalación</string>
     <string name="spoof_apply">Asegúrate de volver aniciar la sesión p\'aplicar la suplantación</string>
     <string name="toast_clipboard_copied">Copióse nel cartafueyu</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="action_copy_link">Copiar l\'enllaz</string>
     <string name="about_telegram">Telegram</string>
     <string name="purchase_unsupported">L\'aplicación nun ye compatible</string>
@@ -68,7 +67,6 @@
     <string name="about_libera_summary">Conviértite en mecenes en Liberapay</string>
     <string name="action_filter_apply">Aplicar</string>
     <string name="title_updates">Anovamientos</string>
-    <string name="about_gitlab_summary">Consigui\'l códigu fonte d\'Aurora Store dende\'l depósitu d\'Aurora OSS en GitLab.</string>
     <string name="action_clear">Borrar</string>
     <string name="pref_install_mode_native">Instalador nativu (obsoletu)</string>
     <string name="account_anonymous">Cuenta anónima</string>

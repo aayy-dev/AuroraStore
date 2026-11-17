@@ -82,7 +82,7 @@ class AppPreviewProvider : PreviewParameterProvider<App> {
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ),
-                privacyPolicyUrl = "https://gitlab.com/AuroraOSS/AuroraStore/"
+                privacyPolicyUrl = "https://github.com/aayy-dev/AuroraStore"
             )
         )
 }

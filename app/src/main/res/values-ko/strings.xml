@@ -15,8 +15,6 @@
     <string name="about_bitcoin_eth">이더리움</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_fdroid_summary">F-Droid에서 Aurora Store를 가져옵니다.</string>
-    <string name="about_gitlab">GitLab</string>
-    <string name="about_gitlab_summary">GitLab의 Aurora OSS에서 Aurora Store의 소스 코드를 가져옵니다.</string>
     <string name="about_libera">리베라페이</string>
     <string name="about_libera_summary">Liberapay에서 후원자가 되세요</string>
     <string name="about_paypal">페이팔</string>

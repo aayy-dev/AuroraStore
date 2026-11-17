@@ -3,7 +3,6 @@
     <string name="details_dev_email">E-pasta adrese</string>
     <string name="about_paypal">PayPal</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid_summary">Iegūt Aurora Store no F-Droid.</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_btc_summary">Ziedot ar Bitcoin (BTC)</string>
@@ -44,7 +43,6 @@
     <string name="about_telegram_summary">Pievienoties Aurora atbalsta kopai apspriedēm un ieteikumiem.</string>
     <string name="about_paypal_summary">Ziedot ar PayPal</string>
     <string name="about_libera_summary">Kļūt par labvēli Liberapay</string>
-    <string name="about_gitlab_summary">Iegūt Aurora Store pirmkodu no Aurora OSS GitLab.</string>
     <string name="details_dev_website">Tīmekļa vietne</string>
     <string name="about_bitcoin_eth_summary">Ziedot ar Ethereum (ETH)</string>
     <string name="about_bitcoin_eth">Ethereum</string>

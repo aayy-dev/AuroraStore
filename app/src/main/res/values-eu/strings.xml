@@ -191,8 +191,6 @@
     <string name="about_paypal">PayPal</string>
     <string name="about_libera_summary">Egin mezenas Liberapay-en</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab_summary">Eskuratu Aurora Store-en iturburu-kodea GitLab-en.</string>
-    <string name="about_gitlab">Gitlab</string>
     <string name="about_fdroid_summary">Eskuratu Aurora Store F-Droid-en bidez.</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_eth_summary">Eman Ethereum (ETH)</string>

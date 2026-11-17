@@ -24,8 +24,6 @@
     <string name="about_bitcoin_eth">Ethereum</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_fdroid_summary">Laadi Aurora pood F-Droidist.</string>
-    <string name="about_gitlab">GitLab</string>
-    <string name="about_gitlab_summary">Leiad Aurora poe lähtekoodi GitLabis asuvast Aurora OSS-ist.</string>
     <string name="about_libera">Liberapay</string>
     <string name="about_paypal">PayPal</string>
     <string name="about_paypal_summary">Anneta PayPali kaudu</string>

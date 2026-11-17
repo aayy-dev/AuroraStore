@@ -73,7 +73,7 @@ private fun ScreenContent(onAboutAurora: () -> Unit = {}) {
         R.drawable.ic_help,
         R.drawable.ic_xda,
         R.drawable.ic_telegram,
-        R.drawable.ic_gitlab,
+        R.drawable.ic_code,
         R.drawable.ic_fdroid,
         R.drawable.ic_bitcoin_btc,
         R.drawable.ic_bitcoin_bch,

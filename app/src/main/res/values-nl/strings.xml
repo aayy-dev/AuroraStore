@@ -17,7 +17,6 @@
     <string name="about_bitcoin_btc_summary">Doneer via Bitcoin (BTC)</string>
     <string name="about_bhim_summary">Doneer via UPI</string>
     <string name="installer_root_unavailable">Geen root-toegang. Sta toe of verander de installatiemethode.</string>
-    <string name="about_gitlab_summary">Download de broncode van Aurora Store via Aurora OSS op GitLab.</string>
     <string name="about_fdroid_summary">Download de Aurora Store via F-Droid.</string>
     <string name="tab_top_charts">Top hitlijsten</string>
     <string name="action_search">Zoeken</string>
@@ -213,7 +212,6 @@
     <string name="about_paypal">PayPal</string>
     <string name="about_libera_summary">Word een patron op Liberapay</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_eth_summary">Doneer via Ethereum (ETH)</string>
     <string name="about_bitcoin_eth">Ethereum</string>

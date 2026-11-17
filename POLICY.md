@@ -7,7 +7,7 @@ Last Updated: **16.10.2023**
 The following data is mandatory to make the Service function, all of which Google needs for **Aurora Store** to be able to receive required data:
 
 - IP Address, bound to network request
-- Timezone, MCC & MNC are stripped & replaced with a random value. (see [here](https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt?ref_type=heads#L104-105))
+- Timezone, MCC & MNC are stripped & replaced with a random value. (see [here](https://github.com/aayy-dev/AuroraStore/blob/46852a7b8011c5ac7e5a1ec8d8184d4915405fc5/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt#L90-L95))
 - List of install apps, search query & packagename of any new app that you install.
    - List of install apps sent to Google can be filter from within the App.
 
@@ -62,7 +62,7 @@ All accounts being used within **Aurora Store** are saved onto the device as AAS
 - GL.Extensions
 - GL.Version
 
-### PlayStore (if installed, otherwise whaterver works, see [here](https://gitlab.com/AuroraOSS/AuroraStore/-/blame/master/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt?ref_type=heads#L94-97))
+### PlayStore (if installed, otherwise whaterver works, see [here](https://github.com/aayy-dev/AuroraStore/blob/46852a7b8011c5ac7e5a1ec8d8184d4915405fc5/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt#L86-L87))
 - GSF.version
 - Vending.version
 - Vending.versionString
@@ -71,7 +71,7 @@ All accounts being used within **Aurora Store** are saved onto the device as AAS
 - Features
 - SharedLibraries
 
-### Cellular Network Info (random value, see [here](https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt?ref_type=heads#L104-105))
+### Cellular Network Info (random value, see [here](https://github.com/aayy-dev/AuroraStore/blob/46852a7b8011c5ac7e5a1ec8d8184d4915405fc5/app/src/main/java/com/aurora/store/data/providers/NativeDeviceInfoProvider.kt#L93-L95))
 - MCC: Mobile Country Code 
 - MNC: Mobile Network Code
 

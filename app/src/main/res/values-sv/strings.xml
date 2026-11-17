@@ -5,7 +5,6 @@
     <string name="about_xda">Forum på XDA</string>
     <string name="about_telegram_summary">Gå med i Aurora\'s hjälp-grupp för diskussioner eller förslag.</string>
     <string name="about_libera_summary">Bli en patron i Liberapay</string>
-    <string name="about_gitlab_summary">Hämta Aurora-butiken\'s källkod från Aurora OSS i GitLab.</string>
     <string name="toast_rated_success">Betygsattes, det kan ta ett tag innan det visas</string>
     <string name="toast_page_unavailable">Bläddringssidan otillgänglig</string>
     <string name="toast_manual_available">Grattis, den efterfrågade versionskoden är tillgänglig, hämtar nu.</string>
@@ -170,7 +169,6 @@
     <string name="about_paypal_summary">Donera via PayPal</string>
     <string name="about_paypal">PayPal</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid_summary">Hämta Aurora-butiken via F-Droid.</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_eth_summary">Donera via Ethereum (ETH)</string>

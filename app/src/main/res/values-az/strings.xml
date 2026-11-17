@@ -90,8 +90,6 @@
     <string name="about_bitcoin_eth">Ethereum</string>
     <string name="about_bitcoin_eth_summary">Ethereum (ETH) vasitəsilə ianə edin</string>
     <string name="about_fdroid">F-Droid</string>
-    <string name="about_gitlab">GitLab</string>
-    <string name="about_gitlab_summary">Aurora Store-un mənbə kodun GitLab-da Aurora OSS-dən əldə et.</string>
     <string name="about_libera">Liberapay</string>
     <string name="about_libera_summary">Liberapay-da lider olun</string>
     <string name="about_xda">XDA Forumları</string>

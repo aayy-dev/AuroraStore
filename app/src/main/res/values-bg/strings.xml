@@ -12,8 +12,6 @@
     <string name="about_bitcoin_eth_summary">Дарете чрез Ethereum (ETH)</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_fdroid_summary">Вземете Aurora Магазин чрез F-Droid.</string>
-    <string name="about_gitlab">GitLab</string>
-    <string name="about_gitlab_summary">Вземете програмния код на Aurora Магазин от Aurora OSS в GitLab.</string>
     <string name="about_libera">Liberapay</string>
     <string name="about_libera_summary">Станете покровител на Liberapay</string>
     <string name="about_paypal">PayPal</string>

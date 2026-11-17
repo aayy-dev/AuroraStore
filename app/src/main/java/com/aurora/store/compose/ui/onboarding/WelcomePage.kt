@@ -69,28 +69,28 @@ private fun PageContent(onAboutAurora: () -> Unit = {}) {
             title = stringResource(R.string.source_code_title),
             subtitle = stringResource(R.string.source_code_subtitle),
             icon = R.drawable.ic_code,
-            url = "https://gitlab.com/AuroraOSS/AuroraStore/"
+            url = "https://github.com/aayy-dev/AuroraStore"
         ),
         Link(
             id = 3,
             title = stringResource(R.string.menu_license),
             subtitle = stringResource(R.string.license_subtitle),
             icon = R.drawable.ic_license,
-            url = "https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/LICENSE"
+            url = "https://github.com/aayy-dev/AuroraStore/blob/main/LICENSE"
         ),
         Link(
             id = 4,
             title = stringResource(R.string.privacy_policy_title),
             subtitle = stringResource(R.string.privacy_policy_subtitle),
             icon = R.drawable.ic_privacy,
-            url = "https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/POLICY.md"
+            url = "https://github.com/aayy-dev/AuroraStore/blob/main/POLICY.md"
         ),
         Link(
             id = 5,
             title = stringResource(R.string.menu_disclaimer),
             subtitle = stringResource(R.string.disclaimer_subtitle),
             icon = R.drawable.ic_disclaimer,
-            url = "https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/DISCLAIMER.md"
+            url = "https://github.com/aayy-dev/AuroraStore/blob/main/DISCLAIMER.md"
         )
     )
 

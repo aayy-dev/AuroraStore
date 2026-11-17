@@ -46,8 +46,6 @@
     <string name="about_paypal_summary">பேபால் வழியாக நன்கொடை</string>
     <string name="about_paypal">பேபால்</string>
     <string name="about_libera">லிபராபே</string>
-    <string name="about_gitlab_summary">கிட்லாப்பில் அரோரா ஓஎஸ்எஸ்ஸிலிருந்து அரோரா ஸ்டோர் மூலக் குறியீட்டைப் பெறுங்கள்.</string>
-    <string name="about_gitlab">கிட்லாப்</string>
     <string name="about_fdroid_summary">அரோரா ஸ்டோரை எஃப்-டிரயோடு வழியாகப் பெறுங்கள்.</string>
     <string name="about_bitcoin_btc_summary">பிட்காயின் (பி.டி.சி) வழியாக நன்கொடை</string>
     <string name="about_bitcoin_btc">பிட்காயின்</string>

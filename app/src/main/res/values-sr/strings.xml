@@ -191,8 +191,6 @@
     <string name="about_paypal_summary">Донирајте преко PayPal-а</string>
     <string name="about_libera_summary">Постаните покровитељ на Liberapay-у</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab_summary">Набавите изворни кôд Aurora Store-а путем Aurora OSS на GitLab-у.</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_bhim_summary">Донирајте преко UPI-ја</string>
     <string name="about_bitcoin_bch_summary">Донирајте преко Bitcoin Cash-а (BCH)</string>
     <string name="about_bitcoin_btc_summary">Донирајте преко Bitcoin-а (BTC)</string>

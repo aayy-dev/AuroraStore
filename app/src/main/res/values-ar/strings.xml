@@ -186,8 +186,6 @@
     <string name="about_paypal">باي بال</string>
     <string name="about_libera_summary">كن داعما على Liberapay</string>
     <string name="about_libera">ليبراباي</string>
-    <string name="about_gitlab_summary">احصل على المصدر البرمجي لمتجر Aurora من Aurora OSS على GitLab.</string>
-    <string name="about_gitlab">جيت لاب</string>
     <string name="about_fdroid_summary">احصل على متجر Aurora عبر F-Droid.</string>
     <string name="about_fdroid">اف-درويد</string>
     <string name="about_bitcoin_eth_summary">التبرع عن طريق الإيثريوم (ETH)</string>

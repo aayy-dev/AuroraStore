@@ -213,7 +213,6 @@
     <string name="about_bitcoin_btc_summary">ਬਿੱਟ-ਕੋਇਨ (BTC) ਜ਼ਰੀਏ ਦਾਨ ਕਰੋ</string>
     <string name="about_libera_summary">Liberapay ਤੇ ਸਰਪ੍ਰਸਤ ਬਣੋ</string>
     <string name="about_libera">Liberapay</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="about_bitcoin_eth">ਐਥੇਰੀਅਮ</string>
     <string name="about_bitcoin_btc">ਬਿੱਟ-ਕੋਇਨ</string>
@@ -223,7 +222,6 @@
     <string name="about_telegram">ਟੈਲੀਗ੍ਰਾਮ</string>
     <string name="about_paypal_summary">PayPal ਜ਼ਰੀਏ ਦਾਨ ਕਰੋ</string>
     <string name="about_paypal">PayPal</string>
-    <string name="about_gitlab_summary">ਔਰੋਰਾ ਸਟੋਰ ਦਾ ਸ੍ਰੋਤ-ਕੋਡ ਗਿਟ-ਲੈਬ ਤੇ ਮੌਜੂਦ Aurora OSS ਤੋਂ ਪ੍ਰਾਪਤ ਕਰੋ।</string>
     <string name="session_verifying">ਸੈਸ਼ਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰ ਰਿਹਾ</string>
     <string name="toast_import_failed">ਡਿਵਾਈਸ ਸੰਰਚਨਾ ਇੰਮਪੋਰਟ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ</string>
     <string name="server_maintenance">ਰੱਖ-ਰਖਾਅ ਲਈ ਸਰਵਰ ਡਾਊਨ ਹੈ</string>

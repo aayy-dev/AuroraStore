@@ -10,9 +10,9 @@ object Constants {
     const val PARCEL_DOWNLOAD = "PARCEL_DOWNLOAD"
 
     const val URL_TOS = "https://play.google.com/about/play-terms/"
-    const val URL_LICENSE = "https://gitlab.com/AuroraOSS/AuroraStore/-/tree/master/LICENSES"
-    const val URL_DISCLAIMER = "https://gitlab.com/AuroraOSS/AuroraStore/blob/master/DISCLAIMER.md"
-    const val URL_POLICY = "https://gitlab.com/AuroraOSS/AuroraStore/-/blob/master/POLICY.md"
+    const val URL_LICENSE = "https://github.com/aayy-dev/AuroraStore/tree/main/LICENSES"
+    const val URL_DISCLAIMER = "https://github.com/aayy-dev/AuroraStore/blob/main/DISCLAIMER.md"
+    const val URL_POLICY = "https://github.com/aayy-dev/AuroraStore/blob/main/POLICY.md"
 
     const val AURORA_API_BASE_URL = "https://api.auroraoss.com/v1/"
 
@@ -46,7 +46,7 @@ object Constants {
         "NOTIFICATION_CHANNEL_ACCOUNT"
     )
 
-    const val GITLAB_URL = "https://gitlab.com/AuroraOSS/AuroraStore"
+    const val SOURCE_URL = "https://github.com/aayy-dev/AuroraStore"
     const val URL_DISPENSER = "https://auroraoss.com/api/auth"
 
     // ACCOUNTS

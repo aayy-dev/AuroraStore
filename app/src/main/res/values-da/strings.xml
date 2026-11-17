@@ -11,7 +11,6 @@
     <string name="account_logout">Log ud fra Aurora</string>
     <string name="about_bhim">BHIM - UPI</string>
     <string name="about_bitcoin_eth">Ethereum</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_fdroid">F-Droid</string>
     <string name="details_dev_email">E-mail</string>
     <string name="details_description">Beskrivelse</string>
@@ -206,7 +205,6 @@
     <string name="about_bitcoin_btc_summary">Donér via Bitcoin (BTC)</string>
     <string name="about_bitcoin_eth_summary">Donér via Ethereum (ETH)</string>
     <string name="about_fdroid_summary">Hent Aurora Store på F-Droid.</string>
-    <string name="about_gitlab_summary">Hent Aurora Store\'s kildekode fra Aurora OSS på GitLab.</string>
     <string name="about_libera_summary">Finansér os på Liberapay</string>
     <string name="about_paypal_summary">Donér via PayPal</string>
     <string name="about_telegram_summary">Deltag i Aurora Support-gruppen for diskussioner eller forslag.</string>

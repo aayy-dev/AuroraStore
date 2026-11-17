@@ -8,7 +8,6 @@
     <string name="about_bitcoin_btc_summary">Paaukoti per Bitcoin (BTC)</string>
     <string name="about_bitcoin_eth_summary">Paaukoti per Ethereum (ETH)</string>
     <string name="about_fdroid">F-Droid</string>
-    <string name="about_gitlab">GitLab</string>
     <string name="about_telegram">Telegram</string>
     <string name="action_back">Atgal</string>
     <string name="action_export">Eksportuoti</string>
@@ -184,7 +183,6 @@
     <string name="tab_top_grossing">Paklausiausios</string>
     <string name="tab_top_paid">Top mokamos</string>
     <string name="title_about">Apie</string>
-    <string name="about_gitlab_summary">Gauti Aurora Store pirminį kodą iš Aurora OSS ties GitLab.</string>
     <string name="action_filter_all">Visi</string>
     <string name="filter_review_five">Penkios</string>
     <string name="filter_review_positive">Teigiami</string>
